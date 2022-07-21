@@ -1,0 +1,27 @@
+# server
+server:
+  port: 8080
+  servlet:
+    context-path: /
+    # encoding:
+    #   charset: UTF-8
+    #   enabled: true
+    #   force: true
+
+
+
+# log level
+logging:
+  logback:
+    rollingpolicy:
+      file-name-pattern: "/Users/djkang/dev/gundam/product-src/logs/gundam.%d{yyyy-MM-dd}.%i"
+  pattern:
+    file: "[%d{HH:mm:ss.SSS}][%-5level][%logger.%method:line%line] - %msg%n"
+  file:
+    name: /Users/djkang/dev/gundam/product-src/logs/gundam.log
+    max-history: 300
+  level:
+    '[com.main.gundam.sample]': INFO
+    org:
+      springframework: INFO
+

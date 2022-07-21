@@ -14,32 +14,35 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class SampleTests {
     @BeforeAll
     public static void beforeAll() {
-        System.out.println("########## beforeAll");
+        log.info("########## beforeAll");
     }
 
     @BeforeEach
     public void beforeEach() {
-        System.out.println("##### beforeEach");
+        log.info("##### beforeEach");
 
     }
 
     @AfterEach
     public void afterEach() {
-        System.out.println("##### afterEach");
+        log.info("##### afterEach");
     }
 
     @AfterAll
     public static void afterAll() {
-        System.out.println("########## afterAll");
+        log.info("########## afterAll");
     }
 
     @Test
     @DisplayName("기본적인 테스트 테스트")
     public void test0001() {
-        System.out.println("test0001");
+        log.info("test0001");
 
         final int[] numbers = {-3, -5, 1, 7, 4, -2};
         final int[] expected = {-5, -3, -2, 1, 4, 7};
@@ -54,7 +57,7 @@ public class SampleTests {
         "a", "b", "d", "e", "f"
     })
     public void argsStringsTest(final String s) {
-        System.out.println(s);
+        log.info(s);
     }
 
     // @ParameterizedTest

@@ -4,13 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.NoArgsConstructor;
-// import lombok.extern.slf4j.Slf4j;
-// import org.junit.Test;
+import lombok.extern.slf4j.Slf4j;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-// import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,16 +17,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-// import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-// import sunghs.rest.api.model.UserInfo;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
+@Slf4j
 public class RestApiControllerTests {
     @Autowired
     private MockMvc mockMvc;
@@ -51,7 +49,7 @@ public class RestApiControllerTests {
     @Test
     public void getTest() throws Exception {
         String url = "/main/get/test3";
-        String content = "{\"name\": \"Ted\", \"hobby\": \"만들기\"}";
+        String content = "{\"name\": \"Ted\", \"hobby\": \"aa\"}";
 
         mockMvc.perform(MockMvcRequestBuilders.get(url)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -59,10 +57,8 @@ public class RestApiControllerTests {
                 .andExpect(result -> {
                     MockHttpServletResponse response = result.getResponse();
                     // log.info(response.getContentAsString());
-                    System.out.println("getContentAsString : " + response.getContentAsString());
-                    System.out.println("getContentType : " + response.getContentType());
-
-                    
+                    log.info("getContentAsString : " + response.getContentAsString());
+                    log.info("getContentType : " + response.getContentType());                  
                 })
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
