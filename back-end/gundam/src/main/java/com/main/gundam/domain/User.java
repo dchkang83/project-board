@@ -1,4 +1,4 @@
-package com.main.gundam.model;
+package com.main.gundam.domain;
 
 import lombok.Data;
 
@@ -20,11 +20,11 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     // @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private long userNo;
     private String username;
     private String password;
     private String roles; // USER, ADMIN
-
+    
     public List<String> getRoleList() {
         if (this.roles.length() > 0) {
             return Arrays.asList(this.roles.split(","));
