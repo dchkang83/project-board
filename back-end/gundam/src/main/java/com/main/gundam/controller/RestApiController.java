@@ -20,19 +20,19 @@ public class RestApiController {
 
     // private static final Logger logger = LoggerFactory.getLogger(RestApiController.class);
 
-    @GetMapping("home")
-    public String home() {
-        log.info("home");
-        // logger.info("home");
+    // @GetMapping("home")
+    // public String home() {
+    //     log.info("home");
+    //     // logger.info("home");
 
-        return "<h1>home</h1>";
-    }
+    //     return "<h1>home</h1>";
+    // }
     
-    @GetMapping("/get/{userId}")
-    public String get(@PathVariable(value = "userId") final String userId) {
-        // logger.info("get user");
-        log.info("get user");
+    // @GetMapping("/get/{userId}")
+    // public String get(@PathVariable(value = "userId") final String userId) {
+    //     // logger.info("get user");
+    //     log.info("get user");
 
-        return userId;
-    }
+    //     return userId;
+    // }
 }

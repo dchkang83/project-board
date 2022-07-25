@@ -1,6 +1,8 @@
 package com.main.gundam.service;
 
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,4 +20,6 @@ public class UserService {
     public Long addUser(User user) {
         return userRepository.save(user).getUserNo();
     }
+
+    public User findByIdPw(String username) { return userRepository.findByUsername(username); }
 }

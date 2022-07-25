@@ -1,0 +1,8 @@
+### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
+
+# openjdk 17 alias
+alias openjdk17='unset JAVA_HOME;export JAVA_HOME=/opt/homebrew/Cellar/openjdk/17.0.2/libexec/openjdk.jdk/Contents/Home;java -version’
+
+export PATH="/Users/djkang/.rd/bin:$PATH"
+
+### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
