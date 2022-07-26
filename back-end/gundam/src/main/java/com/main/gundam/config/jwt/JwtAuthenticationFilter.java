@@ -13,7 +13,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -22,18 +21,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 
-// 스프링 시큐리티에서 UsernamePasswordAuthenticationFilter 가 있음
-// /login 요청해서 username, password 전송하면 (post)
-// UsernamePasswordAuthenticationFilter 가 동작을 함
-
 @Slf4j
 @RequiredArgsConstructor
-// @Component
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private final AuthenticationManager authenticationManager; // @Autowired
-
-    
+    private final AuthenticationManager authenticationManager; // @Autowired    
 
     // /login 요청을 하면 로그인 시도를 위해서 실행되는 함수
     @Override

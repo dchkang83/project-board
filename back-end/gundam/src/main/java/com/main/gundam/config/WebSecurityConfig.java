@@ -1,7 +1,6 @@
 package com.main.gundam.config;
 
 import com.main.gundam.config.auth.PrincipalDetailsService;
-import com.main.gundam.config.jwt.JwtAuthenticationFilter;
 import com.main.gundam.config.jwt.JwtAuthorizationFilter;
 import com.main.gundam.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

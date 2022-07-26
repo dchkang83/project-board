@@ -3,7 +3,6 @@ package com.main.gundam.config;
 import com.main.gundam.config.filter.MyFilter1;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 public class FilterConfig {
     @Bean
