@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,7 +26,14 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private final AuthenticationManager authenticationManager; // @Autowired    
+    // @Autowired
+    // private AuthenticationManager authenticationManager; // @Autowired
+    private final AuthenticationManager authenticationManager; // @Autowired
+
+    // public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
+    //     super.setAuthenticationManager(authenticationManager);
+    // }
+
 
     // /login 요청을 하면 로그인 시도를 위해서 실행되는 함수
     @Override
@@ -53,6 +61,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             // PrincipalDetailsService의 loadUserByUsername 함수가 실행된 후 정상이면 authentication이 리턴됨
             // DB에 있는 username과 password가 일치한다.
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
+            // Authentication authentication = getAuthenticationManager().authenticate(authenticationToken);
 
             // 로그인이 되었다는 뜻.
             PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
@@ -91,6 +100,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .sign(Algorithm.HMAC512("secret-cos"));
 
 //        super.successfulAuthentication(request, response, chain, authResult);
+
+
+        // 따로 뺴자.
+        String token = JwtTokenProvider.generateToken(authResult);
+
+        log.info("jwtToken : {}", jwtToken);
+        log.info("token : {}", jwtToken);
+
         response.addHeader("Authorization", "Bearer " + jwtToken);
     }
 }

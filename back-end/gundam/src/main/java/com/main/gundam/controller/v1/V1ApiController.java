@@ -1,7 +1,7 @@
 package com.main.gundam.controller.v1;
 
 import com.main.gundam.config.auth.PrincipalDetails;
-import com.main.gundam.config.auth.Token;
+import com.main.gundam.config.auth.JwtToken;
 import com.main.gundam.config.jwt.JwtTokenProvider;
 import com.main.gundam.domain.User;
 import com.main.gundam.repository.UserRepository;
@@ -55,12 +55,12 @@ public class V1ApiController {
         method = RequestMethod.POST,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public Token.Response signin(
+    public JwtToken.Response signin(
         // Authentication authentication,
         // @AuthenticationPrincipal PrincipalDetails userDetails,
         final HttpServletRequest req,
         final HttpServletResponse res,        
-        @RequestBody Token.Request request) {
+        @RequestBody JwtToken.Request request) {
         // @RequestBody User user) {
 
         log.info("signin");
@@ -74,30 +74,21 @@ public class V1ApiController {
     
         // User user = userService.findByIdPw(request.getUsername()).orElseThrow(() -> new IllegalArgumentException("없는 사용자입니다."));
         User user = userService.findByIdPw(request.getUsername());
-
-
-        log.info("11");
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
-
-        log.info("22");
-
-        log.info(authenticationToken.toString());
 
         // PrincipalDetailsService의 loadUserByUsername 함수가 실행된 후 정상이면 authentication이 리턴됨
         // DB에 있는 username과 password가 일치한다.
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
-        log.info("33");              
 
         // 로그인이 되었다는 뜻.
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-        log.info("44");
         log.info("LOGIN SUCCESS >>> " + principalDetails.getUser().getUsername()); // 로그인 정상적으로 되었다는 뜻
 
 
         
         String token = JwtTokenProvider.generateToken(authentication);
 
-        Token.Response response = Token.Response.builder().token(token).build();
+        JwtToken.Response response = JwtToken.Response.builder().token(token).build();
 
 
 //         // RSA 방식은 아니고 Hash암호방식

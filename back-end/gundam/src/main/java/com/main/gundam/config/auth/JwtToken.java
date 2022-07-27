@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-public class Token {
+public class JwtToken {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
