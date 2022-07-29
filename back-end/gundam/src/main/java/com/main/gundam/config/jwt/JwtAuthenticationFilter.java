@@ -1,14 +1,11 @@
 package com.main.gundam.config.jwt;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.main.gundam.config.auth.PrincipalDetails;
 import com.main.gundam.domain.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,42 +17,32 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Date;
 
 @Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    // @Autowired
-    // private AuthenticationManager authenticationManager; // @Autowired
     private final AuthenticationManager authenticationManager; // @Autowired
-
-    // public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
-    //     super.setAuthenticationManager(authenticationManager);
-    // }
-
+    private final JwtTokenProvider jwtTokenProvider;
 
     // /login 요청을 하면 로그인 시도를 위해서 실행되는 함수
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        log.info("JwtAuthenticationFilter.attemptAuthentication : 로그인 시도중");
-
-
-        // 1. username, password 받아서
+        log.info("{} - attemptAuthentication -> 로그인 시도중", this.getClass());
 
         // request에 있는 username과 password를 파싱해서 자바 Object로 받기
         ObjectMapper om = new ObjectMapper();
 
         try {
-//            log.info(request.getInputStream().toString());
-//            BufferedReader br = request.getReader();
-//            String input = null;
-//            while((input = br.readLine()) != null) {
-//                log.info(input);
-//            }
+            /*
+            log.info(request.getInputStream().toString());
+            BufferedReader br = request.getReader();
+            String input = null;
+            while((input = br.readLine()) != null) {
+                log.info(input);
+            }
+            */
             User user = om.readValue(request.getInputStream(), User.class);
-                       
-
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
 
             // PrincipalDetailsService의 loadUserByUsername 함수가 실행된 후 정상이면 authentication이 리턴됨
@@ -82,31 +69,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     // JWT 토큰을 만들어서 request 요청한 사용자에게 JWT 토큰을 response 해주면 됨
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        log.info("successfulAuthentication 인증 완료");
+        log.info("{} - successfulAuthentication -> 인증 완료", this.getClass());      
 
-        PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
-
-
-        // RSA 방식은 아니고 Hash암호방식
-        String jwtToken = JWT.create()
-                .withSubject(principalDetails.getUsername())
-//                .withExpiresAt(new Date(System.currentTimeMillis()+JwtProperties.))
-                .withExpiresAt(new Date(System.currentTimeMillis() + (60000 * 10))) // (60000)1분 * 10 => 10분
-
-                .withClaim("id", principalDetails.getUser().getUserNo())
-                .withClaim("username", principalDetails.getUser().getUsername())
-
-//                .sign(Algorithm.HMAC512(JwtProperties.))
-                .sign(Algorithm.HMAC512("secret-cos"));
-
-//        super.successfulAuthentication(request, response, chain, authResult);
-
-
-        // 따로 뺴자.
-        String token = JwtTokenProvider.generateToken(authResult);
-
+        String jwtToken = jwtTokenProvider.generateToken(authResult);
         log.info("jwtToken : {}", jwtToken);
-        log.info("token : {}", jwtToken);
 
         response.addHeader("Authorization", "Bearer " + jwtToken);
     }

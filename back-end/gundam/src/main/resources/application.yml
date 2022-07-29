@@ -8,6 +8,9 @@ server:
     #   enabled: true
     #   force: true
 
+jwt:
+    secret: ThisIsA_SecretKeyForJwtExampleThisIsA_SecretKeyForJwtExampleThisIsA_SecretKeyForJwtExampleThisIsA_SecretKeyForJwtExample
+
 spring:
   datasource:
     # driver-class-name: org.h2.Driver
