@@ -48,7 +48,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             // PrincipalDetailsService의 loadUserByUsername 함수가 실행된 후 정상이면 authentication이 리턴됨
             // DB에 있는 username과 password가 일치한다.
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
-            // Authentication authentication = getAuthenticationManager().authenticate(authenticationToken);
 
             // 로그인이 되었다는 뜻.
             PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();

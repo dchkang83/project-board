@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -42,13 +41,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         log.info("{} - successfulAuthentication -> 인증이나 권한이 필요한 주소 요청이 됨", this.getClass());
         
         String bearerToken = request.getHeader("Authorization");
-        if (ObjectUtils.isEmpty(bearerToken) == true || bearerToken.startsWith("Bearer") == false) {
+        if (bearerToken == null || bearerToken.startsWith("Bearer") == false) {
             chain.doFilter(request, response);
             return;
         }
 
         String jwtToken = bearerToken.substring("Bearer ".length());
-        String username = jwtTokenProvider.getUserNameFromJWT(jwtToken);
+        String username = jwtTokenProvider.getUsernameFromJWT(jwtToken);
         
         // 서명이 정상적으로 됨
         if (username != null) {

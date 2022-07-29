@@ -80,7 +80,6 @@ public class WebSecurityConfig {
 
         // login 주소가 호출되면 인증 및 토큰 발행 필터 추가
         http.addFilterBefore(new JwtAuthenticationFilter(authenticationManager(), jwtTokenProvider()), UsernamePasswordAuthenticationFilter.class);
-        // http.addFilter(new JwtAuthenticationFilter(authenticationManager()));
 
         // jwt 토큰 검사
         http.addFilterBefore(new JwtAuthorizationFilter(userRepository, jwtTokenProvider()), UsernamePasswordAuthenticationFilter.class);

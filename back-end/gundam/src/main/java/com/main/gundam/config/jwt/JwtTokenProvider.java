@@ -29,7 +29,12 @@ public class JwtTokenProvider {
         this.key = new SecretKeySpec(apiKeySecretBytes, SignatureAlgorithm.HS256.getJcaName());
     }
 
-    // jwt 토큰 생성
+    /**
+     * jwt 토큰 생성
+     * 
+     * @param authentication
+     * @return
+     */
     public String generateToken(Authentication authentication) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + JWT_EXPIRATION_MS);
@@ -63,7 +68,12 @@ public class JwtTokenProvider {
         return builder.compact();
     }
 
-    // Jwt 토큰에서 아이디 추출
+    /**
+     * Jwt 토큰에서 유져이름 추출
+     * 
+     * @param jwtToken
+     * @return
+     */
     public String getUsernameFromJWT(String jwtToken) {
         Jws<Claims> claims = Jwts.parserBuilder()
                 .setSigningKey(key)
