@@ -5,9 +5,7 @@ class Test extends React.Component {
         return (
             <React.Suspense>
                 <br/>
-                <br/>
-                <br/>
-                <div>test</div>
+                <div>React</div>
                 <br/>
                 <br/>
                 <br/>
