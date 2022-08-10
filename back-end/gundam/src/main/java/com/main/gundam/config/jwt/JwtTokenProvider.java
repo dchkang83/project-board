@@ -7,7 +7,6 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
 
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
@@ -34,15 +33,12 @@ public class JwtTokenProvider {
     private final int JWT_REFRESH_EXPIRATION_MS = 60000 * 10; // 만료 시간 세팅 : 60000 (1분) * 10 => 10분
     private final Key key;
 
-    private final AuthenticationManager authenticationManager; // @Autowired
-
     private final UserDetailsService userDetailsService;
 
-    public JwtTokenProvider(String secret, AuthenticationManager authenticationManager, UserDetailsService userDetailsService) {
+    public JwtTokenProvider(String secret, UserDetailsService userDetailsService) {
         byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(secret);
         this.key = new SecretKeySpec(apiKeySecretBytes, SignatureAlgorithm.HS256.getJcaName());
 
-        this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
     }
 

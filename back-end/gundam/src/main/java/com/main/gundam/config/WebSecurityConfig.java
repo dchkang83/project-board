@@ -1,13 +1,5 @@
 package com.main.gundam.config;
 
-import com.main.gundam.config.auth.PrincipalDetailsService;
-import com.main.gundam.config.jwt.JwtAuthenticationFilter;
-import com.main.gundam.config.jwt.JwtAuthorizationFilter;
-import com.main.gundam.config.jwt.JwtTokenProvider;
-import com.main.gundam.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,10 +15,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.main.gundam.config.auth.PrincipalDetailsService;
+import com.main.gundam.config.jwt.JwtAuthenticationFilter;
+import com.main.gundam.config.jwt.JwtAuthorizationFilter;
+import com.main.gundam.config.jwt.JwtTokenProvider;
+import com.main.gundam.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@Slf4j
 public class WebSecurityConfig {
     private final UserRepository userRepository;
 
@@ -48,7 +46,7 @@ public class WebSecurityConfig {
 
     @Bean
     public JwtTokenProvider jwtTokenProvider() throws Exception {
-        return new JwtTokenProvider(secret, authenticationManager(), userDetailsService());
+        return new JwtTokenProvider(secret, userDetailsService());
     }
 
     @Bean

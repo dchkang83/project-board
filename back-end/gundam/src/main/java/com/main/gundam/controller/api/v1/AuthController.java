@@ -76,7 +76,6 @@ public class AuthController {
 
     // User user = userService.findByIdPw(request.getUsername()).orElseThrow(() ->
     // new IllegalArgumentException("없는 사용자입니다."));
-    User user = userService.findByIdPw(jwtRequest.getUsername());
     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
       jwtRequest.getUsername(), jwtRequest.getPassword());
 
