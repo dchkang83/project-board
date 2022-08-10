@@ -3,10 +3,8 @@ package com.main.gundam.config.jwt;
 import com.main.gundam.config.auth.PrincipalDetails;
 import com.main.gundam.domain.User;
 import com.main.gundam.repository.UserRepository;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,14 +22,8 @@ import java.io.IOException;
 @Slf4j
 @RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
-
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
-
-    // public JwtAuthorizationFilter(UserRepository userRepository, JwtTokenProvider jwtTokenProvider) {
-    //     this.userRepository = userRepository;
-    //     this.jwtTokenProvider = jwtTokenProvider;
-    // }
 
     /**
      * 인증이나 권한이 필요한 주소요청이 있을 때 해당 필터를 타게됨
@@ -40,15 +32,18 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         log.info("{} - successfulAuthentication -> 인증이나 권한이 필요한 주소 요청이 됨", this.getClass());
         
-        String bearerToken = request.getHeader("Authorization");
-        if (bearerToken == null || bearerToken.startsWith("Bearer") == false) {
+        String bearerAccessToken = request.getHeader("Authorization");
+        
+        if (bearerAccessToken == null || bearerAccessToken.startsWith("Bearer") == false) {
             chain.doFilter(request, response);
             return;
         }
-
-        String jwtToken = bearerToken.substring("Bearer ".length());
-        String username = jwtTokenProvider.getUsernameFromJWT(jwtToken);
         
+        String accessToken = bearerAccessToken.substring("Bearer ".length());
+        log.info("accessToken : {}", accessToken);
+        String username = jwtTokenProvider.getUserEmail(accessToken);        
+        log.info("username : {}", username);
+
         // 서명이 정상적으로 됨
         if (username != null) {
             User userEntity = userRepository.findByUsername(username);

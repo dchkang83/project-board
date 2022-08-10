@@ -2,6 +2,7 @@ package com.main.gundam.config.jwt;
 
 import com.main.gundam.config.auth.PrincipalDetails;
 import com.main.gundam.domain.User;
+import com.main.gundam.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,9 +22,9 @@ import java.io.IOException;
 @Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-
     private final AuthenticationManager authenticationManager; // @Autowired
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
 
     // /login 요청을 하면 로그인 시도를 위해서 실행되는 함수
     @Override
@@ -70,9 +71,20 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         log.info("{} - successfulAuthentication -> 인증 완료", this.getClass());      
 
-        String jwtToken = jwtTokenProvider.generateToken(authResult);
-        log.info("jwtToken : {}", jwtToken);
+        PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
 
-        response.addHeader("Authorization", "Bearer " + jwtToken);
+        String accessToken = jwtTokenProvider.generateAccessToken(authResult);
+        String refreshToken = jwtTokenProvider.generateRefreshToken();
+
+        log.info("accessToken : {}", accessToken);
+        log.info("refreshToken : {}", refreshToken);
+
+        User user = userRepository.findByUserNo(principalDetails.getUser().getUserNo());
+        user.setRefreshToken(refreshToken);
+        userRepository.save(user);
+        log.info("JOIN : " + user);
+
+        jwtTokenProvider.setHeaderAccessToken(response, accessToken);
+        jwtTokenProvider.setHeaderRefreshToken(response, refreshToken);
     }
 }

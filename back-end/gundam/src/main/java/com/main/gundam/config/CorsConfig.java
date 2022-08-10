@@ -1,27 +1,32 @@
 package com.main.gundam.config;
 
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @Slf4j
 public class CorsConfig {
-
     @Bean
-    public CorsFilter corsFilter() {
-        log.info("corsFilter");
+    CorsConfigurationSource corsConfigurationSource(){
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("*")); // Origin URL 등록
+        configuration.setAllowedMethods(Arrays.asList("*")); // 사용할 CRUD 메소드 등록
+        configuration.setAllowedHeaders(Arrays.asList("*")); // 사용할 Header 등록
+
+        
+        configuration.setExposedHeaders(Arrays.asList("authorization", "refreshToken")); // ExpoesdHeader에 클라이언트가 응답에 접근할 수 있는 header들을 추가
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true); // 내서버가 응답을 할 때 json을 자바스크립트에서 처리할 수 있게 할지를 설정하는 것
-        config.addAllowedOrigin("*"); // 모든 IP에 응답을 허용하겠다.
-        config.addAllowedHeader("*"); // 모든 header에 응답을 허용하겠다.
-        config.addAllowedMethod("*"); // 모든 POST, GET, PUT, DELETE, PATCH 요청을 허용하겠다.
-        source.registerCorsConfiguration("/api/**", config);
-        return new CorsFilter(source);
+        source.registerCorsConfiguration("/**", configuration);
+        // source.registerCorsConfiguration("/api/**", config);
+
+        return source;
     }
 }

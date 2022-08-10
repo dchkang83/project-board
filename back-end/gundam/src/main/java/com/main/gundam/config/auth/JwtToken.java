@@ -19,6 +19,7 @@ public class JwtToken {
     @NoArgsConstructor
     @AllArgsConstructor
     public static final class Response {
-        private String token;
+        private String accessToken;
+        private String refreshToken;
     }
 }

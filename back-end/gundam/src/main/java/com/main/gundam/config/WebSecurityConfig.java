@@ -22,14 +22,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 @Slf4j
 public class WebSecurityConfig {
-    private final CorsFilter corsFilter;
     private final UserRepository userRepository;
 
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -49,8 +47,8 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public JwtTokenProvider jwtTokenProvider() {
-        return new JwtTokenProvider(secret);
+    public JwtTokenProvider jwtTokenProvider() throws Exception {
+        return new JwtTokenProvider(secret, authenticationManager(), userDetailsService());
     }
 
     @Bean
@@ -58,19 +56,21 @@ public class WebSecurityConfig {
         http
                 .csrf()
                 .disable()
+                .cors() // cors
+                .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilter(corsFilter) // Controller 어노테이트 @CrossOrigin(인증 X), 시큐리티 필터에 등록 인증(O)
                 .formLogin()
                 // .loginProcessingUrl("/login") // /login 주소가 호출이 되면 시큐리티가 낚아채서 대신 로그인을 진행해준다.
                 .and()
                 .httpBasic().disable()
 
                 .authorizeRequests()
+                // .antMatchers("/refresh").permitAll() // 컨트롤러에서 refresh token 발행..
                 // .antMatchers("/signin").permitAll() // 컨트롤러에서 인증 하는 부분 테스트
 
-                .antMatchers("/api/v1/user/**")
+                .antMatchers("/api/v1/customer/**")
                 .access("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
                 .antMatchers("/api/v1/manager/**")
                 .access("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
@@ -79,7 +79,7 @@ public class WebSecurityConfig {
                 .anyRequest().permitAll();
 
         // login 주소가 호출되면 인증 및 토큰 발행 필터 추가
-        http.addFilterBefore(new JwtAuthenticationFilter(authenticationManager(), jwtTokenProvider()), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtAuthenticationFilter(authenticationManager(), jwtTokenProvider(), userRepository), UsernamePasswordAuthenticationFilter.class);
 
         // jwt 토큰 검사
         http.addFilterBefore(new JwtAuthorizationFilter(userRepository, jwtTokenProvider()), UsernamePasswordAuthenticationFilter.class);
