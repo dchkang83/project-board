@@ -57,6 +57,5 @@ public class UserService {
       JwtToken.Response response = JwtToken.Response.builder().accessToken(newAccessToken).refreshToken(newRefreshToken).build();
 
       return response;
-    }
-    
+    }    
 }
