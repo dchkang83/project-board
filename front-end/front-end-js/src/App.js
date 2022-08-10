@@ -1,5 +1,6 @@
 import React from 'react';
-import RootRoutes from '~/routes/RootRoutes';
+
+import RootRoutes from '~/routes';
 
 const App = () => {
   return (

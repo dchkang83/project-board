@@ -1,16 +1,15 @@
 {
-    "extends": "./jsconfig.paths.json",
-    "compilerOptions": {
-      "module": "commonjs",
-      "target": "es6"
-    },
-    "include": [
-      "src"
-    ],
-    "exclude": [
-      "./node_modules",
-      "**/node_modules",
-      "dist"
-    ]
-  }
-  
+  "extends": "./jsconfig.paths.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es6"
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "./node_modules",
+    "**/node_modules",
+    "dist"
+  ]
+}
