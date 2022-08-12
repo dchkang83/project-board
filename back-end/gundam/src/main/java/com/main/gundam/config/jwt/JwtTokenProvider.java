@@ -17,7 +17,7 @@ import com.main.gundam.config.auth.JwtToken;
 import com.main.gundam.config.auth.PrincipalDetails;
 import com.main.gundam.domain.RefreshToken;
 import com.main.gundam.domain.User;
-import com.main.gundam.dto.JwtTokenDto;
+import com.main.gundam.dto.JwtTokenDTO;
 import com.main.gundam.repository.UserRepository;
 import com.main.gundam.service.JwtService;
 import com.main.gundam.service.UserService;
@@ -190,7 +190,7 @@ public class JwtTokenProvider {
     log.info("accessToken : {}", accessToken);
     log.info("refreshToken : {}", refreshToken);
 
-    JwtTokenDto jwtTokenDto = JwtTokenDto.builder().userNo(userNo).accessToken(accessToken).refreshToken(refreshToken).build();
+    JwtTokenDTO jwtTokenDto = JwtTokenDTO.builder().userNo(userNo).accessToken(accessToken).refreshToken(refreshToken).build();
 
 
     jwtService.saveRefreshToken(jwtTokenDto);
@@ -201,7 +201,7 @@ public class JwtTokenProvider {
     return response;
   }
 
-  public JwtTokenDto refreshToken(String refreshToken) {
+  public JwtTokenDTO refreshToken(String refreshToken) {
     // 유효한 refresh token 인지 체크
     if (!this.validateToken(refreshToken)) {
       throw new AccessDeniedException("AccessDeniedException 2");
@@ -219,7 +219,7 @@ public class JwtTokenProvider {
     String newAccessToken = this.generateAccessToken(authentication);
     String newRefreshToken = this.generateRefreshToken();
 
-    JwtTokenDto jwtTokenDto = JwtTokenDto.builder().userNo(findRefreshToken.getUserNo()).accessToken(newAccessToken).refreshToken(newRefreshToken).build();
+    JwtTokenDTO jwtTokenDto = JwtTokenDTO.builder().userNo(findRefreshToken.getUserNo()).accessToken(newAccessToken).refreshToken(newRefreshToken).build();
 
 
     // TODO. 해야함.

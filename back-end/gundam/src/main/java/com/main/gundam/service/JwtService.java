@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.main.gundam.domain.RefreshToken;
-import com.main.gundam.dto.JwtTokenDto;
+import com.main.gundam.dto.JwtTokenDTO;
 import com.main.gundam.repository.RefreshTokenRepository;
 import com.main.gundam.repository.UserRepository;
 
@@ -35,7 +35,7 @@ public class JwtService {
    * 
    * @param jwtTokenDto
    */
-  public void saveRefreshToken(JwtTokenDto jwtTokenDto) {
+  public void saveRefreshToken(JwtTokenDTO jwtTokenDto) {
     refreshTokenRepository.findByUserNo(jwtTokenDto.getUserNo())
         .ifPresentOrElse(
             r -> {

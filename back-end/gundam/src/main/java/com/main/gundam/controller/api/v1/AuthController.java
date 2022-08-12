@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.main.gundam.config.auth.PrincipalDetails;
 import com.main.gundam.domain.User;
-import com.main.gundam.dto.JwtTokenDto;
+import com.main.gundam.dto.JwtTokenDTO;
 import com.main.gundam.config.auth.JwtToken;
 import com.main.gundam.config.jwt.JwtTokenProvider;
 import com.main.gundam.service.JwtService;
@@ -57,14 +57,14 @@ public class AuthController {
   }
 
   @RequestMapping(value = "refresh", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-  public JwtTokenDto refresh(
+  public JwtTokenDTO refresh(
       final HttpServletRequest request,
       final HttpServletResponse response,
       @RequestHeader(value = "X-REFRESH-TOKEN", required = true) String refreshToken) {
 
     refreshToken = jwtTokenProvider.getBearerTokenToString(refreshToken);
 
-    JwtTokenDto jwtTokenDto = jwtTokenProvider.refreshToken(refreshToken);
+    JwtTokenDTO jwtTokenDto = jwtTokenProvider.refreshToken(refreshToken);
 
     jwtTokenProvider.setHeaderAccessToken(response, jwtTokenDto.getAccessToken());
     jwtTokenProvider.setHeaderRefreshToken(response, jwtTokenDto.getRefreshToken());
