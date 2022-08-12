@@ -7,11 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,11 +19,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.main.gundam.config.auth.PrincipalDetails;
-import com.main.gundam.domain.User;
 import com.main.gundam.dto.TokenDto;
 import com.main.gundam.dto.UserDto;
 import com.main.gundam.dto.LoginDto;
-import com.main.gundam.config.auth.JwtToken;
 import com.main.gundam.config.jwt.JwtTokenProvider;
 import com.main.gundam.service.JwtService;
 import com.main.gundam.service.UserService;

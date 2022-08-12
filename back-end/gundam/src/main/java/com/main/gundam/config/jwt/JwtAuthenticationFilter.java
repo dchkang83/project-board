@@ -1,6 +1,5 @@
 package com.main.gundam.config.jwt;
 
-import com.main.gundam.config.auth.JwtToken;
 import com.main.gundam.config.auth.PrincipalDetails;
 import com.main.gundam.domain.User;
 import com.main.gundam.dto.TokenDto;

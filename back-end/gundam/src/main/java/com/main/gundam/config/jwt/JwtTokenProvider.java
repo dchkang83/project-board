@@ -2,25 +2,21 @@ package com.main.gundam.config.jwt;
 
 import java.security.Key;
 import java.util.Date;
-import java.util.Optional;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
-import com.main.gundam.config.auth.JwtToken;
 import com.main.gundam.config.auth.PrincipalDetails;
 import com.main.gundam.domain.RefreshToken;
 import com.main.gundam.domain.User;
 import com.main.gundam.dto.TokenDto;
 import com.main.gundam.repository.UserRepository;
 import com.main.gundam.service.JwtService;
-import com.main.gundam.service.UserService;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
