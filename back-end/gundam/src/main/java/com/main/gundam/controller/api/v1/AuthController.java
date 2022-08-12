@@ -22,7 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.main.gundam.config.auth.PrincipalDetails;
 import com.main.gundam.domain.User;
-import com.main.gundam.dto.JwtTokenDTO;
+import com.main.gundam.dto.TokenDto;
+import com.main.gundam.dto.UserDto;
+import com.main.gundam.dto.LoginDto;
 import com.main.gundam.config.auth.JwtToken;
 import com.main.gundam.config.jwt.JwtTokenProvider;
 import com.main.gundam.service.JwtService;
@@ -35,7 +37,6 @@ import com.main.gundam.repository.UserRepository;
 @RequestMapping("/api/v1/auth/")
 public class AuthController {
   private final UserRepository userRepository;
-  private final PasswordEncoder bCryptPasswordEncoder;
   private final AuthenticationManager authenticationManager; // @Autowired
   private final JwtTokenProvider jwtTokenProvider;
 
@@ -46,43 +47,40 @@ public class AuthController {
   private JwtService jwtService;
 
   @PostMapping("join")
-  public String join(@RequestBody User user) {
-      user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-      user.setRoles("ROLE_USER");
+  public String join(@RequestBody UserDto userDto) {
+    Long newUserNo = userService.addUser(userDto);
 
-      log.info("JOIN : " + user);
-
-      userRepository.save(user);
-      return "화원가입완료";
+    return "화원가입완료";
   }
 
   @RequestMapping(value = "refresh", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-  public JwtTokenDTO refresh(
+  public TokenDto refresh(
       final HttpServletRequest request,
       final HttpServletResponse response,
       @RequestHeader(value = "X-REFRESH-TOKEN", required = true) String refreshToken) {
 
     refreshToken = jwtTokenProvider.getBearerTokenToString(refreshToken);
 
-    JwtTokenDTO jwtTokenDto = jwtTokenProvider.refreshToken(refreshToken);
+    TokenDto tokenDto = jwtTokenProvider.refreshToken(refreshToken);
 
-    jwtTokenProvider.setHeaderAccessToken(response, jwtTokenDto.getAccessToken());
-    jwtTokenProvider.setHeaderRefreshToken(response, jwtTokenDto.getRefreshToken());
+    jwtTokenProvider.setHeaderAccessToken(response, tokenDto.getAccessToken());
+    jwtTokenProvider.setHeaderRefreshToken(response, tokenDto.getRefreshToken());
 
-    return jwtTokenDto;
+    return tokenDto;
   }
 
   // @PostMapping("signin")
   @RequestMapping(value = "signin", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-  public JwtToken.Response signin(
+  public TokenDto signin(
       final HttpServletRequest request,
       final HttpServletResponse response,
-      @RequestBody JwtToken.Request jwtRequest) {
+      @RequestBody LoginDto loginDto) {
 
     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-      jwtRequest.getUsername(), jwtRequest.getPassword());
+        loginDto.getUsername(), loginDto.getPassword());
 
-    // PrincipalDetailsService의 loadUserByUsername 함수가 실행된 후 정상이면 authentication이 리턴됨
+    // PrincipalDetailsService의 loadUserByUsername 함수가 실행된 후 정상이면 authentication이
+    // 리턴됨
     // DB에 있는 username과 password가 일치한다.
     Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
@@ -93,11 +91,11 @@ public class AuthController {
     String accessToken = jwtTokenProvider.generateAccessToken(authentication);
     String refreshToken = jwtTokenProvider.generateRefreshToken();
 
-    JwtToken.Response jwtResponse = JwtToken.Response.builder().accessToken(accessToken).build();
+    TokenDto jwtDto = TokenDto.builder().accessToken(accessToken).build();
 
     jwtTokenProvider.setHeaderAccessToken(response, accessToken);
     jwtTokenProvider.setHeaderRefreshToken(response, refreshToken);
 
-    return jwtResponse;
+    return jwtDto;
   }
 }

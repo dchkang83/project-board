@@ -1,6 +1,9 @@
 package com.main.gundam.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,8 +16,11 @@ import java.util.Arrays;
 import java.util.List;
 
 @Data
+@Builder
 @Table(name = "TEST") // user table은 이미 사용하고 있는경우가 ..많아서 선언해줌
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
 
     @Id

@@ -17,7 +17,7 @@ import com.main.gundam.config.auth.JwtToken;
 import com.main.gundam.config.auth.PrincipalDetails;
 import com.main.gundam.domain.RefreshToken;
 import com.main.gundam.domain.User;
-import com.main.gundam.dto.JwtTokenDTO;
+import com.main.gundam.dto.TokenDto;
 import com.main.gundam.repository.UserRepository;
 import com.main.gundam.service.JwtService;
 import com.main.gundam.service.UserService;
@@ -176,10 +176,7 @@ public class JwtTokenProvider {
       return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
-
-
-
-  public JwtToken.Response setRefreshToken(Authentication authentication) {
+  public TokenDto setRefreshToken(Authentication authentication) {
 
     PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
 
@@ -190,18 +187,18 @@ public class JwtTokenProvider {
     log.info("accessToken : {}", accessToken);
     log.info("refreshToken : {}", refreshToken);
 
-    JwtTokenDTO jwtTokenDto = JwtTokenDTO.builder().userNo(userNo).accessToken(accessToken).refreshToken(refreshToken).build();
+    TokenDto tokenDto = TokenDto.builder().userNo(userNo).accessToken(accessToken).refreshToken(refreshToken).build();
 
 
-    jwtService.saveRefreshToken(jwtTokenDto);
+    jwtService.saveRefreshToken(tokenDto);
 
 
-    JwtToken.Response response = JwtToken.Response.builder().accessToken(accessToken).refreshToken(refreshToken).build();
+    TokenDto response = TokenDto.builder().accessToken(accessToken).refreshToken(refreshToken).build();
 
     return response;
   }
 
-  public JwtTokenDTO refreshToken(String refreshToken) {
+  public TokenDto refreshToken(String refreshToken) {
     // 유효한 refresh token 인지 체크
     if (!this.validateToken(refreshToken)) {
       throw new AccessDeniedException("AccessDeniedException 2");
@@ -219,16 +216,16 @@ public class JwtTokenProvider {
     String newAccessToken = this.generateAccessToken(authentication);
     String newRefreshToken = this.generateRefreshToken();
 
-    JwtTokenDTO jwtTokenDto = JwtTokenDTO.builder().userNo(findRefreshToken.getUserNo()).accessToken(newAccessToken).refreshToken(newRefreshToken).build();
+    TokenDto tokenDto = TokenDto.builder().userNo(findRefreshToken.getUserNo()).accessToken(newAccessToken).refreshToken(newRefreshToken).build();
 
 
     // TODO. 해야함.
     // findRefreshToken.setRefreshToken("ㅁㅁㅁ");
     // refreshTokenRepository.save(findRefreshToken);
 
-    jwtService.saveRefreshToken(jwtTokenDto);
+    jwtService.saveRefreshToken(tokenDto);
 
 
-    return jwtTokenDto;
+    return tokenDto;
   }
 }

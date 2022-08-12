@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.main.gundam.domain.RefreshToken;
-import com.main.gundam.dto.JwtTokenDTO;
+import com.main.gundam.dto.TokenDto;
 import com.main.gundam.repository.RefreshTokenRepository;
 import com.main.gundam.repository.UserRepository;
 
@@ -33,17 +33,17 @@ public class JwtService {
   /**
    * 최초 발급?
    * 
-   * @param jwtTokenDto
+   * @param tokenDto
    */
-  public void saveRefreshToken(JwtTokenDTO jwtTokenDto) {
-    refreshTokenRepository.findByUserNo(jwtTokenDto.getUserNo())
+  public void saveRefreshToken(TokenDto tokenDto) {
+    refreshTokenRepository.findByUserNo(tokenDto.getUserNo())
         .ifPresentOrElse(
             r -> {
-              r.setRefreshToken(jwtTokenDto.getRefreshToken());
+              r.setRefreshToken(tokenDto.getRefreshToken());
             },
             () -> {
-              RefreshToken token = RefreshToken.builder().userNo(jwtTokenDto.getUserNo())
-                  .refreshToken(jwtTokenDto.getRefreshToken()).build();
+              RefreshToken token = RefreshToken.builder().userNo(tokenDto.getUserNo())
+                  .refreshToken(tokenDto.getRefreshToken()).build();
               refreshTokenRepository.save(token);
             });
   }

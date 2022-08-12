@@ -3,6 +3,7 @@ package com.main.gundam.config.jwt;
 import com.main.gundam.config.auth.JwtToken;
 import com.main.gundam.config.auth.PrincipalDetails;
 import com.main.gundam.domain.User;
+import com.main.gundam.dto.TokenDto;
 import com.main.gundam.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -78,7 +79,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
       Authentication authentication) throws IOException, ServletException {
     log.info("{} - successfulAuthentication -> 인증 완료", this.getClass());
 
-    JwtToken.Response jwtResponse = jwtTokenProvider.setRefreshToken(authentication);
+    TokenDto jwtResponse = jwtTokenProvider.setRefreshToken(authentication);
     jwtTokenProvider.setHeaderAccessToken(response, jwtResponse.getAccessToken());
     jwtTokenProvider.setHeaderRefreshToken(response, jwtResponse.getRefreshToken());
   }

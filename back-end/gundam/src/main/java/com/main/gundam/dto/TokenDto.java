@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class JwtTokenDTO {
+public class TokenDto {
   
   private Long userNo;
   private String accessToken;

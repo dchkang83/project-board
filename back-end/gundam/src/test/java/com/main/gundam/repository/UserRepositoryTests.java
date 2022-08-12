@@ -17,8 +17,12 @@ public class UserRepositoryTests {
     @Test
     public void saveUserTest() {
         //given
-        User user = new User();
-        user.setUsername("test_user111");
+        // User user = new User();
+        // user.setUsername("test_user111");
+        User user = User.builder()
+            .username("test_user111")
+            .build();
+
 
         // when
         userRepository.save(user);
