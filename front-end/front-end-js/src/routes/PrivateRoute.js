@@ -4,13 +4,14 @@ import { Outlet, useLocation, Navigate } from "react-router-dom";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Container from '@mui/material/Container';
 
-import { CheckToken } from '~/auth/CheckTokenl';
+import { CheckToken } from '~/auth/AuthUtils';
 import Loading from '~/component/Loading';
 
 const theme = createTheme();
 
 export default function PrivateRoute() {
   const location = useLocation();
+  console.log('location.key : ', location.key);
   const { isAuth } = CheckToken(location.key);
 
   if (isAuth === 'Failed') {

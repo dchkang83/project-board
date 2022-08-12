@@ -6,9 +6,9 @@ import { Link } from 'react-router-dom';
 import { getCookieToken, removeCookieToken } from '~/utils/Cookie';
 // import { authActions } from '~/store/Auth';
 import { authActions } from '~/store/slices/authSlice';
-import { logoutUser } from '~/api/Users';
+import { logoutUser } from '~/api/Auth';
 
-function Logout(){
+function Logout() {
     const { accessToken } = useSelector(state => state.token);
 
     const dispatch = useDispatch();
@@ -20,7 +20,7 @@ function Logout(){
         const data = await logoutUser({ refresh_token: refreshToken }, accessToken);
 
         if (data.status) {
-            dispatch(authActions.DELETE_TOKEN());
+            dispatch(authActions.delAccessToken());
             removeCookieToken();
             return navigate('/login');
         } else {

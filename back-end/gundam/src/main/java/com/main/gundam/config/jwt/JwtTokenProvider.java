@@ -2,17 +2,29 @@ package com.main.gundam.config.jwt;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.Optional;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
+import com.main.gundam.config.auth.JwtToken;
 import com.main.gundam.config.auth.PrincipalDetails;
+import com.main.gundam.domain.RefreshToken;
+import com.main.gundam.domain.User;
+import com.main.gundam.dto.JwtTokenDto;
+import com.main.gundam.repository.UserRepository;
+import com.main.gundam.service.JwtService;
+import com.main.gundam.service.UserService;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -34,12 +46,17 @@ public class JwtTokenProvider {
     private final Key key;
 
     private final UserDetailsService userDetailsService;
+    private final JwtService jwtService;
+    private final UserRepository userRepository;
+    
 
-    public JwtTokenProvider(String secret, UserDetailsService userDetailsService) {
+    public JwtTokenProvider(String secret, UserDetailsService userDetailsService, JwtService jwtService, UserRepository userRepository) {
         byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(secret);
         this.key = new SecretKeySpec(apiKeySecretBytes, SignatureAlgorithm.HS256.getJcaName());
 
         this.userDetailsService = userDetailsService;
+        this.jwtService = jwtService;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -130,6 +147,12 @@ public class JwtTokenProvider {
       return false;
     }
 
+    // bearer 빼도 순수 토큰만으로 변환
+    public String getBearerTokenToString(String bearerToken) {
+
+      return bearerToken.substring("Bearer ".length());
+    }
+
     // 엑세스 토큰 헤더 설정
     public void setHeaderAccessToken(HttpServletResponse response, String accessToken) {
       response.setHeader("authorization", "Bearer "+ accessToken);
@@ -140,9 +163,72 @@ public class JwtTokenProvider {
       response.setHeader("refreshtoken", "Bearer "+ refreshToken);
     }
 
-    // JWT 에서 인증 정보 조회
-    public Authentication getAuthentication(String token) {
+    // get authentication by access token
+    public Authentication getAuthenticationByAccessToken(String token) {
       UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserEmail(token));
       return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
+
+
+    // get authentication by access token
+    public Authentication getAuthenticationByUserEmail(String userEmail) {
+      UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
+      return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
+
+
+
+
+  public JwtToken.Response setRefreshToken(Authentication authentication) {
+
+    PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+
+    String accessToken = this.generateAccessToken(authentication);
+    String refreshToken = this.generateRefreshToken();
+    Long userNo = principalDetails.getUser().getUserNo();
+
+    log.info("accessToken : {}", accessToken);
+    log.info("refreshToken : {}", refreshToken);
+
+    JwtTokenDto jwtTokenDto = JwtTokenDto.builder().userNo(userNo).accessToken(accessToken).refreshToken(refreshToken).build();
+
+
+    jwtService.saveRefreshToken(jwtTokenDto);
+
+
+    JwtToken.Response response = JwtToken.Response.builder().accessToken(accessToken).refreshToken(refreshToken).build();
+
+    return response;
+  }
+
+  public JwtTokenDto refreshToken(String refreshToken) {
+    // 유효한 refresh token 인지 체크
+    if (!this.validateToken(refreshToken)) {
+      throw new AccessDeniedException("AccessDeniedException 2");
+    }
+    
+    // refresh token 있으면 값 반환, 없으면 Exception
+    RefreshToken findRefreshToken = jwtService.findByRefreshToken(refreshToken)
+        .orElseThrow(() -> new UsernameNotFoundException("refresh token was not found"));
+
+    // refresh token 을 활용하여 user email 정보 획득
+    User user = userRepository.findByUserNo(findRefreshToken.getUserNo());
+
+    // access token 과 refresh token 모두를 재발급
+    Authentication authentication = this.getAuthenticationByUserEmail(user.getUsername());
+    String newAccessToken = this.generateAccessToken(authentication);
+    String newRefreshToken = this.generateRefreshToken();
+
+    JwtTokenDto jwtTokenDto = JwtTokenDto.builder().userNo(findRefreshToken.getUserNo()).accessToken(newAccessToken).refreshToken(newRefreshToken).build();
+
+
+    // TODO. 해야함.
+    // findRefreshToken.setRefreshToken("ㅁㅁㅁ");
+    // refreshTokenRepository.save(findRefreshToken);
+
+    jwtService.saveRefreshToken(jwtTokenDto);
+
+
+    return jwtTokenDto;
+  }
 }

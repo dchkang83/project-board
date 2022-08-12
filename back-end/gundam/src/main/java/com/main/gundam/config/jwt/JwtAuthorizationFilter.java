@@ -31,18 +31,16 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         log.info("{} - successfulAuthentication -> 인증이나 권한이 필요한 주소 요청이 됨", this.getClass());
-        
-        String bearerAccessToken = request.getHeader("Authorization");
+
+        String bearerAccessToken = request.getHeader("X-ACCESS-TOKEN");
         
         if (bearerAccessToken == null || bearerAccessToken.startsWith("Bearer") == false) {
             chain.doFilter(request, response);
             return;
         }
         
-        String accessToken = bearerAccessToken.substring("Bearer ".length());
-        log.info("accessToken : {}", accessToken);
+        String accessToken = jwtTokenProvider.getBearerTokenToString(bearerAccessToken);
         String username = jwtTokenProvider.getUserEmail(accessToken);        
-        log.info("username : {}", username);
 
         // 서명이 정상적으로 됨
         if (username != null) {

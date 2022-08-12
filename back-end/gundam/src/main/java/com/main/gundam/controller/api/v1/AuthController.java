@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,8 +22,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.main.gundam.config.auth.PrincipalDetails;
 import com.main.gundam.domain.User;
+import com.main.gundam.dto.JwtTokenDto;
 import com.main.gundam.config.auth.JwtToken;
 import com.main.gundam.config.jwt.JwtTokenProvider;
+import com.main.gundam.service.JwtService;
 import com.main.gundam.service.UserService;
 import com.main.gundam.repository.UserRepository;
 
@@ -39,6 +42,9 @@ public class AuthController {
   @Autowired
   private UserService userService;
 
+  @Autowired
+  private JwtService jwtService;
+
   @PostMapping("join")
   public String join(@RequestBody User user) {
       user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
@@ -51,20 +57,19 @@ public class AuthController {
   }
 
   @RequestMapping(value = "refresh", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-  public JwtToken.Response refresh(
+  public JwtTokenDto refresh(
+      final HttpServletRequest request,
       final HttpServletResponse response,
-      @RequestHeader(value = "X-AUTH-TOKEN") String accessToken,
-      @RequestHeader(value = "REFRESH-TOKEN") String refreshToken) {
+      @RequestHeader(value = "X-REFRESH-TOKEN", required = true) String refreshToken) {
 
-        accessToken = accessToken.substring("Bearer ".length());
-        refreshToken = refreshToken.substring("Bearer ".length());
+    refreshToken = jwtTokenProvider.getBearerTokenToString(refreshToken);
 
-    JwtToken.Response jwtResponse = userService.refreshToken(accessToken, refreshToken);
+    JwtTokenDto jwtTokenDto = jwtTokenProvider.refreshToken(refreshToken);
 
-    jwtTokenProvider.setHeaderAccessToken(response, jwtResponse.getAccessToken());
-    jwtTokenProvider.setHeaderRefreshToken(response, jwtResponse.getRefreshToken());
+    jwtTokenProvider.setHeaderAccessToken(response, jwtTokenDto.getAccessToken());
+    jwtTokenProvider.setHeaderRefreshToken(response, jwtTokenDto.getRefreshToken());
 
-    return null;
+    return jwtTokenDto;
   }
 
   // @PostMapping("signin")
@@ -74,8 +79,6 @@ public class AuthController {
       final HttpServletResponse response,
       @RequestBody JwtToken.Request jwtRequest) {
 
-    // User user = userService.findByIdPw(request.getUsername()).orElseThrow(() ->
-    // new IllegalArgumentException("없는 사용자입니다."));
     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
       jwtRequest.getUsername(), jwtRequest.getPassword());
 

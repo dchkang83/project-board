@@ -1,42 +1,50 @@
 package com.main.gundam.service;
 
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.main.gundam.domain.RefreshToken;
+import com.main.gundam.dto.JwtTokenDto;
+import com.main.gundam.repository.RefreshTokenRepository;
+import com.main.gundam.repository.UserRepository;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Service
+// @RequiredArgsConstructor
+@Transactional
 public class JwtService {
-  // @Transactional
-  // public String reissueRefreshToken(String refreshToken) throws RuntimeException {
-  //   // refresh token을 디비의 그것과 비교해보기
-  //   Authentication authentication = getAuthentication(refreshToken);
-  //   RefreshToken findRefreshToken = refreshTokenRepository.findByUserId(authentication.getName())
-  //       .orElseThrow(() -> new UsernameNotFoundException("userId : " + authentication.getName() + " was not found"));
+  // private final JwtTokenProvider jwtTokenProvider;
 
-  //   if (findRefreshToken.getToken().equals(refreshToken)) {
-  //     // 새로운거 생성
-  //     String newRefreshToken = createRefreshToken(authentication);
-  //     findRefreshToken.changeToken(newRefreshToken);
-  //     return newRefreshToken;
-  //   } else {
-  //     log.info("refresh 토큰이 일치하지 않습니다. ");
-  //     return null;
-  //   }
-  // }
+  @Autowired
+  private UserRepository userRepository;
 
-  // @Transactional
-  // public String issueRefreshToken(Authentication authentication) {
-  //   String newRefreshToken = createRefreshToken(authentication);
+  @Autowired
+  private RefreshTokenRepository refreshTokenRepository;
 
-  //   // 기존것이 있다면 바꿔주고, 없다면 만들어줌
-  //   refreshTokenRepository.findByUserId(authentication.getName())
-  //       .ifPresentOrElse(
-  //           r -> {
-  //             r.changeToken(newRefreshToken);
-  //             log.info("issueRefreshToken method | change token ");
-  //           },
-  //           () -> {
-  //             RefreshToken token = RefreshToken.createToken(authentication.getName(), newRefreshToken);
-  //             log.info(" issueRefreshToken method | save tokenID : {}, token : {}", token.getUserId(),
-  //                 token.getToken());
-  //             refreshTokenRepository.save(token);
-  //           });
-
-  //   return newRefreshToken;
-  // }
+  public Optional<RefreshToken> findByRefreshToken(String refreshToken) {    
+    return refreshTokenRepository.findByRefreshToken(refreshToken);
+  }
+  
+  /**
+   * 최초 발급?
+   * 
+   * @param jwtTokenDto
+   */
+  public void saveRefreshToken(JwtTokenDto jwtTokenDto) {
+    refreshTokenRepository.findByUserNo(jwtTokenDto.getUserNo())
+        .ifPresentOrElse(
+            r -> {
+              r.setRefreshToken(jwtTokenDto.getRefreshToken());
+            },
+            () -> {
+              RefreshToken token = RefreshToken.builder().userNo(jwtTokenDto.getUserNo())
+                  .refreshToken(jwtTokenDto.getRefreshToken()).build();
+              refreshTokenRepository.save(token);
+            });
+  }
 }

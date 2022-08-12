@@ -10,12 +10,21 @@ export const authSlice = createSlice({
     expireTime: null
   },
   reducers: {
-    SET_TOKEN: (state, action) => {
+    setAccessToken: (state, action) => {
+
+
+      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> setAccessToken');
+      console.log(action);
+
       state.authenticated = true;
       state.accessToken = action.payload;
       state.expireTime = new Date().getTime() + TOKEN_TIME_OUT;
+
+
+      console.log('state.accessToken : ', state.accessToken);
+
     },
-    DELETE_TOKEN: (state) => {
+    delAccessToken: (state) => {
       state.authenticated = false;
       state.accessToken = null;
       state.expireTime = null
@@ -23,8 +32,6 @@ export const authSlice = createSlice({
   }
 })
 
-// export const { SET_TOKEN, DELETE_TOKEN } = tokenSlice.actions;
- 
 // export default tokenSlice.reducer;
 
 export const authReducer = authSlice.reducer;

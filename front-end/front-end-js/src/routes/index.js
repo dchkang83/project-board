@@ -11,7 +11,6 @@ import PrivateRoute from './PrivateRoute';
 const RootRoutes = () => (
   <Routes>
     <Route element={<PublicRoute />}>
-      {/* <Route path="/" element={<Navigate replace to="/login" />} /> */}
       <Route path="/login/" element={<Login />} />
     </Route>
 

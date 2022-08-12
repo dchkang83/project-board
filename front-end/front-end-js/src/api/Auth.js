@@ -23,10 +23,6 @@ const getPromise = async (url, option) => {
 };
 
 export const loginUser = async (credentials) => {
-  console.log(JSON.stringify(credentials));
-  // alert('111');
-  
-  
   const option = {
     method: 'POST',
     headers: {
@@ -99,15 +95,22 @@ export const logoutUser = async (credentials, accessToken) => {
 }
 
 export const requestToken = async (refreshToken) => {
+
+
+  console.log('################ requestToken #################');
+  // console.log('accessToken : ', accessToken);
+  console.log('refreshToken : ', refreshToken);
   const option = {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json;charset=UTF-8'
+      'Content-Type': 'application/json;charset=UTF-8',
+      // 'X-ACCESS-TOKEN': accessToken,
+      'X-REFRESH-TOKEN': refreshToken
     },
-    body: JSON.stringify({ refresh_token: refreshToken })
+    // body: JSON.stringify({ refresh_token: refreshToken })
   }
 
-  const data = await getPromise('/user/login', option).catch(() => {
+  const data = await getPromise('/api/v1/auth/refresh', option).catch(() => {
     return statusError;
   });
 
@@ -116,11 +119,18 @@ export const requestToken = async (refreshToken) => {
     const code = data.status;
     const text = await data.text();
     const json = text.length ? JSON.parse(text) : "";
+    
+    const jwtTokens = {
+      access_token: data.headers.get('authorization'),
+      refresh_token: data.headers.get('refreshtoken'),
+    };
+
 
     return {
       status,
       code,
-      json
+      json,
+      jwtTokens
     };
   } else {
     return statusError;

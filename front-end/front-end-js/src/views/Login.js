@@ -14,10 +14,8 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 
-// import { signActions } from '~/slices/sign/signSlice';
-
 import { setRefreshToken } from '~/utils/Cookie';
-import { loginUser } from '~/api/Users';
+import { loginUser } from '~/api/Auth';
 import { authActions } from '~/store/slices/authSlice';
 
 function Copyright(props) {
@@ -37,23 +35,6 @@ function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-
-  // const handleLogin = (event) => {
-  //   event.preventDefault();
-
-  //   const data = new FormData(event.currentTarget);
-  //   console.log({
-  //     email: data.get('email'),
-  //     password: data.get('password'),
-  //   });
-
-  //   // TODO. 이렇게 쓰는게 맞나? 확인해봐야함
-  //   dispatch(signActions.postSign(data.get('email'), data.get('password')));
-
-  //   // alert('Dialog 커스터 마이징 후 사용');
-  //   // window.location.href = '/dashboard/Dashboard';
-  // };
-
   // useForm 사용을 위한 선언
   const { register, setValue, formState: { errors }, handleSubmit } = useForm();
 
@@ -63,7 +44,6 @@ function Login() {
     const response = await loginUser({ username, password });
 
     if (response.status) {
-
       console.log('response.jwtTokens : ', response.jwtTokens);
 
       // console.log('response.test : ', test);
@@ -72,10 +52,10 @@ function Login() {
       // 쿠키에 Refresh Token, store에 Access Token 저장
       /*
       setRefreshToken(response.json11.refresh_token);
-      dispatch(authActions.SET_TOKEN(response.json11.access_token));
+      dispatch(authActions.setAccessToken(response.json11.access_token));
       */
 
-      dispatch(authActions.SET_TOKEN(response.jwtTokens.access_token));
+      dispatch(authActions.setAccessToken(response.jwtTokens.access_token));
       setRefreshToken(response.jwtTokens.refresh_token);
 
 

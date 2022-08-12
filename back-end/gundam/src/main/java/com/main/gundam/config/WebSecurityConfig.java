@@ -20,12 +20,15 @@ import com.main.gundam.config.jwt.JwtAuthenticationFilter;
 import com.main.gundam.config.jwt.JwtAuthorizationFilter;
 import com.main.gundam.config.jwt.JwtTokenProvider;
 import com.main.gundam.repository.UserRepository;
+import com.main.gundam.service.JwtService;
+
 import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
+  private final JwtService jwtService;
     private final UserRepository userRepository;
 
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -46,7 +49,7 @@ public class WebSecurityConfig {
 
     @Bean
     public JwtTokenProvider jwtTokenProvider() throws Exception {
-        return new JwtTokenProvider(secret, userDetailsService());
+        return new JwtTokenProvider(secret, userDetailsService(), jwtService, userRepository);
     }
 
     @Bean
@@ -65,7 +68,7 @@ public class WebSecurityConfig {
                 .httpBasic().disable()
 
                 .authorizeRequests()
-                // .antMatchers("/refresh").permitAll() // 컨트롤러에서 refresh token 발행..
+                .antMatchers("/api/v1/auth/refresh").permitAll() // 컨트롤러에서 refresh token 발행..
                 // .antMatchers("/signin").permitAll() // 컨트롤러에서 인증 하는 부분 테스트
 
                 .antMatchers("/api/v1/customer/**")
