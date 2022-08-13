@@ -59,7 +59,6 @@ public class JwtService {
   }
 
   public TokenDto refresh(String bearerRefreshToken) {
-
     JwtTokenProvider jwtTokenProvider = context.getBean(JwtTokenProvider.class);
 
     String refreshToken = jwtTokenProvider.getBearerTokenToString(bearerRefreshToken);
