@@ -21,6 +21,7 @@ import com.main.gundam.config.jwt.JwtAuthorizationFilter;
 import com.main.gundam.config.jwt.JwtTokenProvider;
 import com.main.gundam.repository.UserRepository;
 import com.main.gundam.service.JwtService;
+import com.main.gundam.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +52,7 @@ public class WebSecurityConfig {
 
   @Bean
   public JwtTokenProvider jwtTokenProvider() {
-    return new JwtTokenProvider(secret);
+    return new JwtTokenProvider(secret, userDetailsService());
   }
 
   @Bean
@@ -86,7 +87,7 @@ public class WebSecurityConfig {
         UsernamePasswordAuthenticationFilter.class);
 
     // jwt 토큰 검사
-    http.addFilterBefore(new JwtAuthorizationFilter(userRepository, jwtTokenProvider()),
+    http.addFilterBefore(new JwtAuthorizationFilter(jwtTokenProvider(), userRepository),
         UsernamePasswordAuthenticationFilter.class);
 
     // TODO. 왜 추가 했는지 잘 기억이가 안남. 확인이 필요함

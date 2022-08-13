@@ -3,6 +3,7 @@ package com.main.gundam.config.jwt;
 import com.main.gundam.config.auth.PrincipalDetails;
 import com.main.gundam.domain.User;
 import com.main.gundam.dto.TokenDto;
+import com.main.gundam.dto.UserDto;
 import com.main.gundam.service.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -45,9 +46,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
        * log.info(input);
        * }
        */
-      User user = om.readValue(request.getInputStream(), User.class);
+      UserDto userDto = om.readValue(request.getInputStream(), UserDto.class);
+
+      log.info("user.getUsername() : {}", userDto.getUsername());
+      log.info("user.getPassword() : {}", userDto.getPassword());
+
       UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-          user.getUsername(), user.getPassword());
+        userDto.getUsername(), userDto.getPassword());
 
       // PrincipalDetailsService의 loadUserByUsername 함수가 실행된 후 정상이면 authentication이
       // 리턴됨

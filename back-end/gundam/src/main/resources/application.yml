@@ -9,6 +9,8 @@ server:
     #   force: true
 
 jwt:
+  # HS512 알고리즘을 사용할 것이기 때문에 512bit, 즉 64byte 이상의 secret key를 사용해야 한다.
+  # echo 'sdafasfasfdfdfsdsdfsdsf'|base64
   secret: ThisIsA_SecretKeyForJwtExampleThisIsA_SecretKeyForJwtExampleThisIsA_SecretKeyForJwtExampleThisIsA_SecretKeyForJwtExample
 
 spring:

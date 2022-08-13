@@ -30,7 +30,7 @@ public class UserServiceTests {
   private UserRepository userRepository;
   
   @Mock
-  private PasswordEncoder bCryptPasswordEncoder;
+  private PasswordEncoder passwordEncoder;
 
   @Test
   @DisplayName("사용자 등록")
@@ -52,7 +52,7 @@ public class UserServiceTests {
     ReflectionTestUtils.setField(user, "userNo", fakeUserNo);
 
     // mocking
-    // given(bCryptPasswordEncoder.encode())
+    // given(passwordEncoder.encode())
     //   .willReturn();
     given(userRepository.save(any()))
         .willReturn(user);
@@ -60,8 +60,8 @@ public class UserServiceTests {
         .willReturn(Optional.ofNullable(user));
 
     // when
-    Long newUserNo = userService.addUser(userDto);
-    User retrivedUser = userRepository.findById(newUserNo).get();
+    User newUser = userService.addUser(userDto);
+    User retrivedUser = userRepository.findById(newUser.getUserNo()).get();
 
     // then
     Assertions.assertEquals(retrivedUser.getUsername(), username);

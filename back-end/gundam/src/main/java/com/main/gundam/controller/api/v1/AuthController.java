@@ -20,35 +20,26 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.main.gundam.config.auth.PrincipalDetails;
 import com.main.gundam.dto.TokenDto;
-import com.main.gundam.dto.UserDto;
 import com.main.gundam.dto.LoginDto;
 import com.main.gundam.config.jwt.JwtTokenProvider;
 import com.main.gundam.service.JwtService;
-import com.main.gundam.service.UserService;
-import com.main.gundam.repository.UserRepository;
 
 @Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/auth/")
 public class AuthController {
-  private final UserRepository userRepository;
   private final AuthenticationManager authenticationManager; // @Autowired
   private final JwtTokenProvider jwtTokenProvider;
+  private final JwtService jwtService;
 
-  @Autowired
-  private UserService userService;
+  // @PostMapping("join")
+  // public String join(@RequestBody UserDto userDto) {
+  //   Long newUserNo = userService.addUser(userDto);
 
-  @Autowired
-  private JwtService jwtService;
-
-  @PostMapping("join")
-  public String join(@RequestBody UserDto userDto) {
-    Long newUserNo = userService.addUser(userDto);
-
-    // TODO. 요놈은 인증이 아니니깐 USER로 뺴야할듯.
-    return "화원가입완료 : " + newUserNo;
-  }
+  //   // TODO. 요놈은 인증이 아니니깐 USER로 뺴야할듯.
+  //   return "화원가입완료 : " + newUserNo;
+  // }
 
   @RequestMapping(value = "refresh", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
   public TokenDto refresh(

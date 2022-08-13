@@ -27,14 +27,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Transactional
 public class JwtService {
-  @Autowired
-  private ApplicationContext context;
-  
-  @Autowired
-  private UserRepository userRepository;
-
-  @Autowired
-  private RefreshTokenRepository refreshTokenRepository;
+  private final ApplicationContext context; // @Autowired
+  private final UserRepository userRepository;
+  private final RefreshTokenRepository refreshTokenRepository;
 
   public Optional<RefreshToken> findByRefreshToken(String refreshToken) {
     return refreshTokenRepository.findByRefreshToken(refreshToken);

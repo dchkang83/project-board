@@ -36,16 +36,17 @@ public class JwtTokenProvider {// implements InitializingBean {
   private final int JWT_REFRESH_EXPIRATION_MS = 60000 * 10; // 만료 시간 세팅 : 60000 (1분) * 10 => 10분
 
   private final Key key;
-
-  @Autowired
-  private UserDetailsService userDetailsService;
+  
+  private final UserDetailsService userDetailsService;
 
   public JwtTokenProvider(
       // @Value("${jwt.secret}") String secret
-      String secret
+      String secret,
+      UserDetailsService userDetailsService
       ) {
     byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(secret);
     this.key = new SecretKeySpec(apiKeySecretBytes, SignatureAlgorithm.HS256.getJcaName());
+    this.userDetailsService = userDetailsService;
   }
 
 

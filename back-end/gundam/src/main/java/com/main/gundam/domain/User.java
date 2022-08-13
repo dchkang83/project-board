@@ -40,6 +40,7 @@ public class User {
   @Column(name = "user_name", length = 50, unique = true)
   private String username;
 
+  @JsonIgnore
   @Column(name = "password", nullable = false, length = 200)
   private String password;
 
