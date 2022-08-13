@@ -3,7 +3,7 @@ package com.main.gundam.config.jwt;
 import com.main.gundam.config.auth.PrincipalDetails;
 import com.main.gundam.domain.User;
 import com.main.gundam.dto.TokenDto;
-import com.main.gundam.repository.UserRepository;
+import com.main.gundam.service.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,13 +25,12 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
   private final AuthenticationManager authenticationManager; // @Autowired
   private final JwtTokenProvider jwtTokenProvider;
-
-  // @Autowired
-  // private JwtService jwtService;
+  private final JwtService jwtService;
 
   // /login 요청을 하면 로그인 시도를 위해서 실행되는 함수
   @Override
-  public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)  throws AuthenticationException {
+  public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
+      throws AuthenticationException {
     log.info("{} - attemptAuthentication -> 로그인 시도중", this.getClass());
 
     // request에 있는 username과 password를 파싱해서 자바 Object로 받기
@@ -47,7 +46,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
        * }
        */
       User user = om.readValue(request.getInputStream(), User.class);
-      UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
+      UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+          user.getUsername(), user.getPassword());
 
       // PrincipalDetailsService의 loadUserByUsername 함수가 실행된 후 정상이면 authentication이
       // 리턴됨
@@ -76,8 +76,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
       Authentication authentication) throws IOException, ServletException {
     log.info("{} - successfulAuthentication -> 인증 완료", this.getClass());
 
-    TokenDto jwtResponse = jwtTokenProvider.setRefreshToken(authentication);
-    jwtTokenProvider.setHeaderAccessToken(response, jwtResponse.getAccessToken());
-    jwtTokenProvider.setHeaderRefreshToken(response, jwtResponse.getRefreshToken());
+    PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+
+    String accessToken = jwtTokenProvider.generateAccessToken(authentication);
+    String refreshToken = jwtTokenProvider.generateRefreshToken();
+    Long userNo = principalDetails.getUser().getUserNo();
+
+    TokenDto tokenDto = TokenDto.builder().userNo(userNo).refreshToken(refreshToken).build();
+    jwtService.saveRefreshToken(tokenDto);
+
+    jwtTokenProvider.setHeaderAccessToken(response, accessToken);
+    jwtTokenProvider.setHeaderRefreshToken(response, refreshToken);
+
   }
 }

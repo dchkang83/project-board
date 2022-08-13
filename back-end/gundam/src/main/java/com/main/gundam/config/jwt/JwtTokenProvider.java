@@ -7,20 +7,13 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
 
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-
-import com.main.gundam.config.auth.PrincipalDetails;
-import com.main.gundam.domain.RefreshToken;
-import com.main.gundam.domain.User;
-import com.main.gundam.dto.TokenDto;
-import com.main.gundam.repository.UserRepository;
-import com.main.gundam.service.JwtService;
-
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
+import com.main.gundam.config.auth.PrincipalDetails;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -34,30 +27,34 @@ import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class JwtTokenProvider {
+// @Component
+// @Service
+public class JwtTokenProvider {// implements InitializingBean {
   // 토큰 유효시간
   // private final int JWT_EXPIRATION_MS = 604800000;
   private final int JWT_EXPIRATION_MS = 60000 * 1; // 만료 시간 세팅 : 60000 (1분) * 10 => 10분
   private final int JWT_REFRESH_EXPIRATION_MS = 60000 * 10; // 만료 시간 세팅 : 60000 (1분) * 10 => 10분
+
   private final Key key;
 
-  private final UserDetailsService userDetailsService;
-  private final JwtService jwtService;
-  private final UserRepository userRepository;
+  @Autowired
+  private UserDetailsService userDetailsService;
 
   public JwtTokenProvider(
-      // @Value("${jwt.secret}") String secret,
-      String secret,
-      UserDetailsService userDetailsService,
-      JwtService jwtService,
-      UserRepository userRepository) {
+      // @Value("${jwt.secret}") String secret
+      String secret
+      ) {
     byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(secret);
     this.key = new SecretKeySpec(apiKeySecretBytes, SignatureAlgorithm.HS256.getJcaName());
-
-    this.userDetailsService = userDetailsService;
-    this.jwtService = jwtService;
-    this.userRepository = userRepository;
   }
+
+
+  // @Override
+  // public void afterPropertiesSet() throws Exception {
+  //   // TODO Auto-generated method stub
+  // }
+
+
 
   /**
    * jwt 토큰 생성
@@ -151,9 +148,8 @@ public class JwtTokenProvider {
     return false;
   }
 
-  // bearer 빼도 순수 토큰만으로 변환
+  // bearer 빼고, 순수 토큰 변환
   public String getBearerTokenToString(String bearerToken) {
-
     return bearerToken.substring("Bearer ".length());
   }
 
@@ -177,52 +173,5 @@ public class JwtTokenProvider {
   public Authentication getAuthenticationByUsername(String username) {
     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
     return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-  }
-
-  public TokenDto setRefreshToken(Authentication authentication) {
-
-    PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-
-    String accessToken = this.generateAccessToken(authentication);
-    String refreshToken = this.generateRefreshToken();
-    Long userNo = principalDetails.getUser().getUserNo();
-
-    TokenDto tokenDto = TokenDto.builder().userNo(userNo).accessToken(accessToken).refreshToken(refreshToken).build();
-
-    jwtService.saveRefreshToken(tokenDto);
-
-    TokenDto response = TokenDto.builder().accessToken(accessToken).refreshToken(refreshToken).build();
-
-    return response;
-  }
-
-  public TokenDto refreshToken(String refreshToken) {
-    // 유효한 refresh token 인지 체크
-    if (!this.validateToken(refreshToken)) {
-      throw new AccessDeniedException("AccessDeniedException 2");
-    }
-
-    // refresh token 있으면 값 반환, 없으면 Exception
-    RefreshToken findRefreshToken = jwtService.findByRefreshToken(refreshToken)
-        .orElseThrow(() -> new UsernameNotFoundException("refresh token was not found"));
-
-    // refresh token 을 활용하여 user email 정보 획득
-    User user = userRepository.findByUserNo(findRefreshToken.getUserNo());
-
-    // access token 과 refresh token 모두를 재발급
-    Authentication authentication = this.getAuthenticationByUsername(user.getUsername());
-    String newAccessToken = this.generateAccessToken(authentication);
-    String newRefreshToken = this.generateRefreshToken();
-
-    TokenDto tokenDto = TokenDto.builder().userNo(findRefreshToken.getUserNo()).accessToken(newAccessToken)
-        .refreshToken(newRefreshToken).build();
-
-    // TODO. 해야함.
-    // findRefreshToken.setRefreshToken("ㅁㅁㅁ");
-    // refreshTokenRepository.save(findRefreshToken);
-
-    jwtService.saveRefreshToken(tokenDto);
-
-    return tokenDto;
   }
 }

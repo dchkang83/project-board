@@ -19,11 +19,11 @@ public class UserService {
   private final PasswordEncoder bCryptPasswordEncoder;
   private final UserRepository userRepository;
 
+  public User findByUsername(String username) {
+    return userRepository.findByUsername(username);
+  }
+
   public Long addUser(UserDto userDto) {
-
-
-    log.info(bCryptPasswordEncoder.toString());
-
     User user = User.builder()
         .username(userDto.getUsername())
         .password(bCryptPasswordEncoder.encode(userDto.getPassword()))
