@@ -95,7 +95,7 @@ function Login() {
             name="email"
             autoComplete="email"
             autoFocus
-            value={"dchkang83@naver.com"}
+            value={"customer@naver.com"}
           />
           <TextField
             {...register("password", { required: "Please Enter Your Password" })}

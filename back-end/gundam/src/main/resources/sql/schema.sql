@@ -1,0 +1,6 @@
+-- create table t_user(
+--   userNo varchar(64) primary key ,
+--   username varchar(64) not null,
+--   password varchar(13),
+--   roles varchar(64)
+-- );
