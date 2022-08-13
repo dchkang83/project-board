@@ -23,84 +23,89 @@ import com.main.gundam.repository.UserRepository;
 import com.main.gundam.service.JwtService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
   private final JwtService jwtService;
-    private final UserRepository userRepository;
-    private final AuthenticationConfiguration authenticationConfiguration;
+  private final UserRepository userRepository;
+  private final AuthenticationConfiguration authenticationConfiguration;
 
-    @Value("${jwt.secret}")
-    private String secret;
+  @Value("${jwt.secret}")
+  private String secret;
+  // private String secret =
+  // "ThisIsA_SecretKeyForJwtExampleThisIsA_SecretKeyForJwtExampleThisIsA_SecretKeyForJwtExampleThisIsA_SecretKeyForJwtExample";
 
-    @Bean
-    public AuthenticationManager authenticationManager() throws Exception 
-    {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
+  @Bean
+  public AuthenticationManager authenticationManager() throws Exception {
+    return authenticationConfiguration.getAuthenticationManager();
+  }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {        
-        return new BCryptPasswordEncoder();
-    }
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
-    @Bean
-    public JwtTokenProvider jwtTokenProvider() throws Exception {
-        return new JwtTokenProvider(secret, userDetailsService(), jwtService, userRepository);
-    }
+  @Bean
+  public JwtTokenProvider jwtTokenProvider() {
+    return new JwtTokenProvider(secret);
+  }
 
-    @Bean
-    protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf()
-                .disable()
-                .cors() // cors
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .formLogin()
-                // .loginProcessingUrl("/login") // /login 주소가 호출이 되면 시큐리티가 낚아채서 대신 로그인을 진행해준다.
-                .and()
-                .httpBasic().disable()
+  @Bean
+  protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    http
+        .csrf()
+        .disable()
+        .cors() // cors
+        .and()
+        .sessionManagement()
+        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        .and()
+        .formLogin()
+        // .loginProcessingUrl("/login") // /login 주소가 호출이 되면 시큐리티가 낚아채서 대신 로그인을 진행해준다.
+        .and()
+        .httpBasic().disable()
 
-                .authorizeRequests()
-                .antMatchers("/api/v1/auth/refresh").permitAll() // 컨트롤러에서 refresh token 발행..
-                // .antMatchers("/signin").permitAll() // 컨트롤러에서 인증 하는 부분 테스트
+        .authorizeRequests()
+        .antMatchers("/api/v1/auth/refresh").permitAll() // 컨트롤러에서 refresh token 발행..
+        // .antMatchers("/signin").permitAll() // 컨트롤러에서 인증 하는 부분 테스트
 
-                .antMatchers("/api/v1/customer/**")
-                .access("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
-                .antMatchers("/api/v1/manager/**")
-                .access("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
-                .antMatchers("/api/v1/admin/**")
-                .access("hasRole('ROLE_ADMIN')")
-                .anyRequest().permitAll();
+        .antMatchers("/api/v1/customer/**")
+        .access("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
+        .antMatchers("/api/v1/manager/**")
+        .access("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
+        .antMatchers("/api/v1/admin/**")
+        .access("hasRole('ROLE_ADMIN')")
+        .anyRequest().permitAll();
 
-        // login 주소가 호출되면 인증 및 토큰 발행 필터 추가
-        http.addFilterBefore(new JwtAuthenticationFilter(authenticationManager(), jwtTokenProvider()), UsernamePasswordAuthenticationFilter.class);
+    // login 주소가 호출되면 인증 및 토큰 발행 필터 추가
+    http.addFilterBefore(new JwtAuthenticationFilter(authenticationManager(), jwtTokenProvider(), jwtService),
+        UsernamePasswordAuthenticationFilter.class);
 
-        // jwt 토큰 검사
-        http.addFilterBefore(new JwtAuthorizationFilter(userRepository, jwtTokenProvider()), UsernamePasswordAuthenticationFilter.class);
+    // jwt 토큰 검사
+    http.addFilterBefore(new JwtAuthorizationFilter(userRepository, jwtTokenProvider()),
+        UsernamePasswordAuthenticationFilter.class);
 
-        // TODO. 왜 추가 했는지 잘 기억이가 안남. 확인이 필요함
-        // http.authenticationProvider(authenticationProvider());
+    // TODO. 왜 추가 했는지 잘 기억이가 안남. 확인이 필요함
+    // http.authenticationProvider(authenticationProvider());
 
-        return http.build();
-    }
+    return http.build();
+  }
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return new PrincipalDetailsService(userRepository);
-    }
+  @Bean
+  public UserDetailsService userDetailsService() {
+    return new PrincipalDetailsService();
+  }
 
-    @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+  @Bean
+  public DaoAuthenticationProvider authenticationProvider() {
+    DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
 
-        authProvider.setUserDetailsService(userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
+    authProvider.setUserDetailsService(userDetailsService());
+    authProvider.setPasswordEncoder(passwordEncoder());
+    return authProvider;
+  }
 }
