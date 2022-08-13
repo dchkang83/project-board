@@ -123,7 +123,7 @@ public class JwtTokenProvider {
    * @param accessToken
    * @return
    */
-  public String getUserEmail(String accessToken) {
+  public String getUsernameByAccessToken(String accessToken) {
     Jws<Claims> claims = Jwts.parserBuilder()
         .setSigningKey(key)
         .build()
@@ -169,13 +169,13 @@ public class JwtTokenProvider {
 
   // get authentication by access token
   public Authentication getAuthenticationByAccessToken(String token) {
-    UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserEmail(token));
+    UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUsernameByAccessToken(token));
     return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
   }
 
-  // get authentication by access token
-  public Authentication getAuthenticationByUserEmail(String userEmail) {
-    UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
+  // get authentication by user email
+  public Authentication getAuthenticationByUsername(String username) {
+    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
     return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
   }
 
@@ -186,9 +186,6 @@ public class JwtTokenProvider {
     String accessToken = this.generateAccessToken(authentication);
     String refreshToken = this.generateRefreshToken();
     Long userNo = principalDetails.getUser().getUserNo();
-
-    log.info("accessToken : {}", accessToken);
-    log.info("refreshToken : {}", refreshToken);
 
     TokenDto tokenDto = TokenDto.builder().userNo(userNo).accessToken(accessToken).refreshToken(refreshToken).build();
 
@@ -213,7 +210,7 @@ public class JwtTokenProvider {
     User user = userRepository.findByUserNo(findRefreshToken.getUserNo());
 
     // access token 과 refresh token 모두를 재발급
-    Authentication authentication = this.getAuthenticationByUserEmail(user.getUsername());
+    Authentication authentication = this.getAuthenticationByUsername(user.getUsername());
     String newAccessToken = this.generateAccessToken(authentication);
     String newRefreshToken = this.generateRefreshToken();
 

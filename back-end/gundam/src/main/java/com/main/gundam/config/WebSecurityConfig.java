@@ -30,7 +30,6 @@ import lombok.RequiredArgsConstructor;
 public class WebSecurityConfig {
   private final JwtService jwtService;
     private final UserRepository userRepository;
-
     private final AuthenticationConfiguration authenticationConfiguration;
 
     @Value("${jwt.secret}")
@@ -80,7 +79,7 @@ public class WebSecurityConfig {
                 .anyRequest().permitAll();
 
         // login 주소가 호출되면 인증 및 토큰 발행 필터 추가
-        http.addFilterBefore(new JwtAuthenticationFilter(authenticationManager(), jwtTokenProvider(), userRepository), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtAuthenticationFilter(authenticationManager(), jwtTokenProvider()), UsernamePasswordAuthenticationFilter.class);
 
         // jwt 토큰 검사
         http.addFilterBefore(new JwtAuthorizationFilter(userRepository, jwtTokenProvider()), UsernamePasswordAuthenticationFilter.class);

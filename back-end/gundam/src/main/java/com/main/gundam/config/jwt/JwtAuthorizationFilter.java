@@ -40,7 +40,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         }
         
         String accessToken = jwtTokenProvider.getBearerTokenToString(bearerAccessToken);
-        String username = jwtTokenProvider.getUserEmail(accessToken);        
+        String username = jwtTokenProvider.getUsernameByAccessToken(accessToken);
 
         // 서명이 정상적으로 됨
         if (username != null) {

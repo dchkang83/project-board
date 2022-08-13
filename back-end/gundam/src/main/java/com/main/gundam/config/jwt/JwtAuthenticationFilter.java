@@ -25,8 +25,6 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
   private final AuthenticationManager authenticationManager; // @Autowired
   private final JwtTokenProvider jwtTokenProvider;
-  // private final JwtService jwtService;
-  private final UserRepository userRepository;
 
   // @Autowired
   // private JwtService jwtService;
