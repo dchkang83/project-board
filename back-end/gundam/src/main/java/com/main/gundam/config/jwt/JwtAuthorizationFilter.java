@@ -1,17 +1,10 @@
 package com.main.gundam.config.jwt;
 
-import com.main.gundam.config.auth.PrincipalDetails;
-import com.main.gundam.domain.User;
-import com.main.gundam.repository.UserRepository;
-import com.main.gundam.service.UserService;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -19,8 +12,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 // 시큐리티가 filter 가지고 있는데 그 필터중에 BasicAuthenticationFilter 라는 것이 있음.
 // 권한이나 인증이 필요한 특정 주소를 요청했을 때 위 필터를 무조건 타게 되어있음.
@@ -29,19 +20,19 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
-    private final UserRepository userRepository;
 
     /**
      * 인증이나 권한이 필요한 주소요청이 있을 때 해당 필터를 타게됨
      */
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+    protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws IOException, ServletException {
         log.info("{} - successfulAuthentication -> 인증이나 권한이 필요한 주소 요청이 됨", this.getClass());
 
-        String bearerAccessToken = request.getHeader("X-ACCESS-TOKEN");
+        /*
+        String bearerAccessToken = httpServletRequest.getHeader("X-ACCESS-TOKEN");
         
         if (bearerAccessToken == null || bearerAccessToken.startsWith("Bearer") == false) {
-            chain.doFilter(request, response);
+            filterChain.doFilter(httpServletRequest, httpServletResponse);
             return;
         }
         
@@ -53,21 +44,15 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
           userRepository.findOneWithAuthoritiesByUsername(username)
           .ifPresentOrElse(
             r -> {
-
-              
               List<GrantedAuthority> grantedAuthorities = r.getAuthorities().stream()
                   .map(authority -> new SimpleGrantedAuthority(authority.getAuthorityName()))
                   .collect(Collectors.toList());
-              // return new org.springframework.security.core.userdetails.User(user.getUsername(),
-              //     user.getPassword(),
-              //     grantedAuthorities);
-              // return new PrincipalDetails(r, grantedAuthorities);
-
 
               PrincipalDetails principalDetails = new PrincipalDetails(r, grantedAuthorities);
 
-              // Jwt 토큰 서명을 통해서 서명이 정상이면 Authentication 객체를 만들어 준다.
+              // Jwt 토큰 서명을 통해서 서명이 정상이면 Authentication 객체를 만들어 준다.              
               Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
+              // Authentication authentication = jwtTokenProvider.getAuthenticationByAccessToken(accessToken);
 
               // 강제로 시큐리티의 세션에 접근하여 Authentication 객체를 저장.
               SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -77,18 +62,23 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
               
             });
 
-            chain.doFilter(request, response);
-
-
-            // User userEntity = userRepository.findByUsername(username);
-            // PrincipalDetails principalDetails = new PrincipalDetails(userEntity);
-
-            // // Jwt 토큰 서명을 통해서 서명이 정상이면 Authentication 객체를 만들어 준다.
-            // Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
-
-            // // 강제로 시큐리티의 세션에 접근하여 Authentication 객체를 저장.
-            // SecurityContextHolder.getContext().setAuthentication(authentication);
-            // chain.doFilter(request, response);
+            filterChain.doFilter(httpServletRequest, httpServletResponse);
         }
+        */
+        // DB까지 체크 할 필요성...?? 암튼 아래와 같이 변경        
+        String bearerAccessToken = httpServletRequest.getHeader("X-ACCESS-TOKEN");        
+        String accessToken = jwtTokenProvider.getBearerTokenToString(bearerAccessToken);
+
+        if (StringUtils.hasText(accessToken) && jwtTokenProvider.validateToken(accessToken)) {
+          Authentication authentication = jwtTokenProvider.getAuthenticationByAccessToken(accessToken);
+          SecurityContextHolder.getContext().setAuthentication(authentication); // resolveToke을 통해 토큰을 받아와서 유효성 검증을 하고 정상 토큰이면 SecurityContext에 저장
+          log.debug("Security Context에 '{}' 인증 정보를 저장했습니다", authentication.getName());
+        } else {
+          log.debug("유효한 JWT 토큰이 없습니다");
+        }
+
+        filterChain.doFilter(httpServletRequest, httpServletResponse); // 다음 Filter를 실행하기 위한 코드. 마지막 필터라면 필터 실행 후 리소스를 반환한다.
     }
+
+    
 }

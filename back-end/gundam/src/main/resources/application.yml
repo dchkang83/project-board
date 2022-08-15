@@ -24,6 +24,7 @@ spring:
     username: test-board-user
     password: test1234@
   jpa:
+    defer-datasource-initialization: true # Hibernate 초기화 후 data.sql 실행
     hibernate:
       ddl-auto: create #create update none
       naming:
@@ -32,7 +33,7 @@ spring:
   sql:
     init:
       mode: always # 서버 시작시 항상 classpath의 sql문을 실행하도록 설정
-      continue-on-error: true # 서버 시작시 sql문을 실행할 때 오류 무시하고 계속 진행
+      continue-on-error: false # 서버 시작시 sql문을 실행할 때 오류 무시하고 계속 진행
       data-locations: classpath:sql/data.sql # 서버 시작시 dml sql문을 실행할 위치 및 파일 지정
       # schema-locations: classpath:sql/schema.sql # 서버 시작시 ddl sql문을 실행할 위치 및 파일 지정
     
@@ -47,7 +48,7 @@ logging:
     name: /Users/djkang/dev/gundam/product-src/logs/gundam.log
     max-history: 300
   level:
-    '[com.main.gundam.sample]': INFO
+    '[com.main.gundam]': DEBUG
     org:
       springframework: INFO
 

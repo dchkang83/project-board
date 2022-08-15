@@ -1,15 +1,16 @@
-INSERT INTO T_USER (USER_NAME, PASSWORD, ROLES) VALUES ('customer@naver.com', '$2a$10$rVT/tNSwxPt7j4eAI1NFrO8NA3JRnhvhyIIHQSdo.vusLrIBXFZ.6', 'ROLE_USER');
-INSERT INTO T_USER (USER_NAME, PASSWORD, ROLES) VALUES ('admin@naver.com', '$2a$10$rVT/tNSwxPt7j4eAI1NFrO8NA3JRnhvhyIIHQSdo.vusLrIBXFZ.6', 'ROLE_ADMIN');
-INSERT INTO T_USER (USER_NAME, PASSWORD, ROLES) VALUES ('manager@naver.com', '$2a$10$rVT/tNSwxPt7j4eAI1NFrO8NA3JRnhvhyIIHQSdo.vusLrIBXFZ.6', 'ROLE_MANAGER');
+INSERT INTO t_authority (`authority_name`) values ('ROLE_USER');
+INSERT INTO t_authority (`authority_name`) VALUES ('ROLE_MANAGER');
+INSERT INTO t_authority (`authority_name`) values ('ROLE_ADMIN');
 
 
-INSERT INTO AUTHORITY (AUTHORITY_NAME) values ('ROLE_USER');
-INSERT INTO AUTHORITY (AUTHORITY_NAME) values ('ROLE_MANAGER');
-INSERT INTO AUTHORITY (AUTHORITY_NAME) values ('ROLE_ADMIN');
+INSERT INTO t_user (`user_name`, `password`, `roles`) VALUES ('customer@naver.com', '$2a$10$rVT/tNSwxPt7j4eAI1NFrO8NA3JRnhvhyIIHQSdo.vusLrIBXFZ.6', 'ROLE_USER');
+INSERT INTO t_user (`user_name`, `password`, `roles`) VALUES ('admin@naver.com', '$2a$10$rVT/tNSwxPt7j4eAI1NFrO8NA3JRnhvhyIIHQSdo.vusLrIBXFZ.6', 'ROLE_ADMIN');
+INSERT INTO t_user (`user_name`, `password`, `roles`) VALUES ('manager@naver.com', '$2a$10$rVT/tNSwxPt7j4eAI1NFrO8NA3JRnhvhyIIHQSdo.vusLrIBXFZ.6', 'ROLE_MANAGER');
 
-INSERT INTO USER_AUTHORITY (USER_ID, AUTHORITY_NAME) values (1, 'ROLE_USER');
-INSERT INTO USER_AUTHORITY (USER_ID, AUTHORITY_NAME) values (2, 'ROLE_USER');
-INSERT INTO USER_AUTHORITY (USER_ID, AUTHORITY_NAME) values (2, 'ROLE_MANAGER');
-INSERT INTO USER_AUTHORITY (USER_ID, AUTHORITY_NAME) values (3, 'ROLE_USER');
-INSERT INTO USER_AUTHORITY (USER_ID, AUTHORITY_NAME) values (3, 'ROLE_MANAGER');
-INSERT INTO USER_AUTHORITY (USER_ID, AUTHORITY_NAME) values (3, 'ROLE_ADMIN');
+
+INSERT INTO t_user_authority (`user_no`, `authority_name`) VALUES (1, 'ROLE_USER');
+INSERT INTO t_user_authority (`user_no`, `authority_name`) VALUES (2, 'ROLE_USER');
+INSERT INTO t_user_authority (`user_no`, `authority_name`) VALUES (2, 'ROLE_MANAGER');
+INSERT INTO t_user_authority (`user_no`, `authority_name`) VALUES (3, 'ROLE_USER');
+INSERT INTO t_user_authority (`user_no`, `authority_name`) VALUES (3, 'ROLE_MANAGER');
+INSERT INTO t_user_authority (`user_no`, `authority_name`) VALUES (3, 'ROLE_ADMIN');

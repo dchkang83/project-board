@@ -33,14 +33,6 @@ public class AuthController {
   private final JwtTokenProvider jwtTokenProvider;
   private final JwtService jwtService;
 
-  // @PostMapping("join")
-  // public String join(@RequestBody UserDto userDto) {
-  //   Long newUserNo = userService.addUser(userDto);
-
-  //   // TODO. 요놈은 인증이 아니니깐 USER로 뺴야할듯.
-  //   return "화원가입완료 : " + newUserNo;
-  // }
-
   @RequestMapping(value = "refresh", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
   public TokenDto refresh(
       final HttpServletRequest request,

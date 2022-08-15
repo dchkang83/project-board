@@ -69,7 +69,6 @@ public class UserService {
             .username(userDto.getUsername())
             .password(passwordEncoder.encode(userDto.getPassword()))
 
-
             .roles("ROLE_USER")
 
             // .nickname(userDto.getNickname())

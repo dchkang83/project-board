@@ -19,9 +19,7 @@ import com.main.gundam.config.auth.PrincipalDetailsService;
 import com.main.gundam.config.jwt.JwtAuthenticationFilter;
 import com.main.gundam.config.jwt.JwtAuthorizationFilter;
 import com.main.gundam.config.jwt.JwtTokenProvider;
-import com.main.gundam.repository.UserRepository;
 import com.main.gundam.service.JwtService;
-import com.main.gundam.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
   private final JwtService jwtService;
-  private final UserRepository userRepository;
   private final AuthenticationConfiguration authenticationConfiguration;
 
   @Value("${jwt.secret}")
@@ -87,9 +84,9 @@ public class WebSecurityConfig {
         UsernamePasswordAuthenticationFilter.class);
 
     // jwt 토큰 검사
-    http.addFilterBefore(new JwtAuthorizationFilter(jwtTokenProvider(), userRepository),
+    http.addFilterBefore(new JwtAuthorizationFilter(jwtTokenProvider()),
         UsernamePasswordAuthenticationFilter.class);
-
+    
     // TODO. 왜 추가 했는지 잘 기억이가 안남. 확인이 필요함
     // http.authenticationProvider(authenticationProvider());
 

@@ -7,11 +7,11 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.util.StringUtils;
 
 import com.main.gundam.config.auth.PrincipalDetails;
 
@@ -151,7 +151,10 @@ public class JwtTokenProvider {// implements InitializingBean {
 
   // bearer 빼고, 순수 토큰 변환
   public String getBearerTokenToString(String bearerToken) {
-    return bearerToken.substring("Bearer ".length());
+    if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+      return bearerToken.substring("Bearer ".length());
+    }
+    return null;
   }
 
   // 엑세스 토큰 헤더 설정
