@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.main.gundam.config.jwt.JwtTokenProvider;
-import com.main.gundam.domain.RefreshToken;
-import com.main.gundam.domain.User;
 import com.main.gundam.dto.TokenDto;
+import com.main.gundam.entity.RefreshToken;
+import com.main.gundam.entity.User;
 import com.main.gundam.repository.RefreshTokenRepository;
 import com.main.gundam.repository.UserRepository;
 

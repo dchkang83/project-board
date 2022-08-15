@@ -7,9 +7,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.main.gundam.domain.Authority;
-import com.main.gundam.domain.User;
 import com.main.gundam.dto.UserDto;
+import com.main.gundam.entity.Authority;
+import com.main.gundam.entity.User;
 import com.main.gundam.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -39,7 +39,7 @@ public class UserService {
     User user = User.builder()
         .username(userDto.getUsername())
         .password(passwordEncoder.encode(userDto.getPassword()))
-        .roles("ROLE_USER")
+        // .roles("ROLE_USER")
         .build();
 
     log.info("JOIN : " + user);
@@ -69,7 +69,7 @@ public class UserService {
             .username(userDto.getUsername())
             .password(passwordEncoder.encode(userDto.getPassword()))
 
-            .roles("ROLE_USER")
+            // .roles("ROLE_USER")
 
             // .nickname(userDto.getNickname())
             .authorities(Collections.singleton(authority))

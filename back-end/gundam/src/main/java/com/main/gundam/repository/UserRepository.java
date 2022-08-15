@@ -4,7 +4,8 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.main.gundam.domain.User;
+
+import com.main.gundam.entity.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     public Optional<User> findByUsername(String username);

@@ -1,4 +1,4 @@
-package com.main.gundam.domain;
+package com.main.gundam.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,16 +44,16 @@ public class User {
   @Column(name = "password", nullable = false, length = 200)
   private String password;
 
-  @Column(name = "roles", length = 50)
-  private String roles; // ROLE_USER < ROLE_MANAGER < ROLE_ADMIN
+  // @Column(name = "roles", length = 50)
+  // private String roles; // ROLE_USER < ROLE_MANAGER < ROLE_ADMIN
 
-  public List<String> getRoleList() {
-    if (this.roles.length() > 0) {
-      return Arrays.asList(this.roles.split(","));
-    }
+  // public List<String> getRoleList() {
+  //   if (this.roles.length() > 0) {
+  //     return Arrays.asList(this.roles.split(","));
+  //   }
 
-    return new ArrayList<>();
-  }
+  //   return new ArrayList<>();
+  // }
 
   @ManyToMany
   @JoinTable(

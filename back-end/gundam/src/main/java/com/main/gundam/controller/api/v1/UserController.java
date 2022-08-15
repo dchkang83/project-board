@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.main.gundam.dto.UserDto;
-import com.main.gundam.domain.User;
+import com.main.gundam.entity.User;
 import com.main.gundam.service.UserService;
 
 @Slf4j

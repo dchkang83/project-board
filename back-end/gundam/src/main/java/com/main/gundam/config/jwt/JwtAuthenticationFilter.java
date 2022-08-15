@@ -1,9 +1,9 @@
 package com.main.gundam.config.jwt;
 
 import com.main.gundam.config.auth.PrincipalDetails;
-import com.main.gundam.domain.User;
 import com.main.gundam.dto.TokenDto;
 import com.main.gundam.dto.UserDto;
+import com.main.gundam.entity.User;
 import com.main.gundam.service.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;

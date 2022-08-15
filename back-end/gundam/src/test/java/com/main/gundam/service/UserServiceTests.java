@@ -8,8 +8,8 @@ import java.util.Optional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.main.gundam.domain.User;
 import com.main.gundam.dto.UserDto;
+import com.main.gundam.entity.User;
 import com.main.gundam.repository.UserRepository;
 
 import org.junit.jupiter.api.Test;

@@ -1,10 +1,11 @@
 package com.main.gundam.config.auth;
 
-import com.main.gundam.domain.User;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import com.main.gundam.entity.User;
 
 import java.util.ArrayList;
 import java.util.Collection;

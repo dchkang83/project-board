@@ -1,6 +1,6 @@
 package com.main.gundam.config.auth;
 
-import com.main.gundam.domain.User;
+import com.main.gundam.entity.User;
 import com.main.gundam.repository.UserRepository;
 import com.main.gundam.service.UserService;
 

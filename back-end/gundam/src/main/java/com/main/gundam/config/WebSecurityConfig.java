@@ -29,13 +29,11 @@ import lombok.extern.slf4j.Slf4j;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
-  private final JwtService jwtService;
   private final AuthenticationConfiguration authenticationConfiguration;
+  private final JwtService jwtService;
 
   @Value("${jwt.secret}")
   private String secret;
-  // private String secret =
-  // "ThisIsA_SecretKeyForJwtExampleThisIsA_SecretKeyForJwtExampleThisIsA_SecretKeyForJwtExampleThisIsA_SecretKeyForJwtExample";
 
   @Bean
   public AuthenticationManager authenticationManager() throws Exception {
