@@ -29,7 +29,6 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
-
   @JsonIgnore // JSON으로 표현해줄때 제외한다
   @Id
   @Column(name = "user_no")

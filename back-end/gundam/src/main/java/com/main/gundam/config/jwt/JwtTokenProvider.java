@@ -34,28 +34,21 @@ public class JwtTokenProvider {// implements InitializingBean {
   // private final int JWT_EXPIRATION_MS = 604800000;
   private final int JWT_EXPIRATION_MS = 60000 * 1; // 만료 시간 세팅 : 60000 (1분) * 10 => 10분
   private final int JWT_REFRESH_EXPIRATION_MS = 60000 * 10; // 만료 시간 세팅 : 60000 (1분) * 10 => 10분
-
   private final Key key;
-  
   private final UserDetailsService userDetailsService;
 
   public JwtTokenProvider(
-      // @Value("${jwt.secret}") String secret
       String secret,
-      UserDetailsService userDetailsService
-      ) {
+      UserDetailsService userDetailsService) {
     byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(secret);
     this.key = new SecretKeySpec(apiKeySecretBytes, SignatureAlgorithm.HS256.getJcaName());
     this.userDetailsService = userDetailsService;
   }
 
-
   // @Override
   // public void afterPropertiesSet() throws Exception {
-  //   // TODO Auto-generated method stub
+  // // TODO Auto-generated method stub
   // }
-
-
 
   /**
    * jwt 토큰 생성
@@ -82,21 +75,17 @@ public class JwtTokenProvider {// implements InitializingBean {
      * iat: 토큰이 발급된 시간 (issued at), 이 값을 사용하여 토큰의 age 가 얼마나 되었는지 판단 할 수 있습니다.
      * jti: JWT의 고유 식별자로서, 주로 중복적인 처리를 방지하기 위하여 사용됩니다. 일회용 토큰에 사용하면 유용합니다. (id)
      */
-    Claims claims = Jwts.claims().setSubject(String.valueOf(principalDetails.getUser().getUserNo())); // JWT payload 에
-                                                                                                      // 저장되는 정보단위
+    Claims claims = Jwts.claims().setSubject(String.valueOf(principalDetails.getUser().getUserNo())); // JWT payload 에 저장되는 정보단위
 
     // 표준 클레임 셋팅
     JwtBuilder builder = Jwts.builder()
         .setClaims(claims) // 정보 저장
-        .setId(String.valueOf(principalDetails.getUser().getUserNo())) // jti: JWT의 고유 식별자로서, 주로 중복적인 처리를 방지하기 위하여
-                                                                       // 사용됩니다. 일회용 토큰에 사용하면 유용합니다.
-        .setIssuedAt(now) // iat: 토큰이 발급된 시간 (issued at), 이 값을 사용하여 토큰의 age 가 얼마나 되었는지 판단 할 수 있습니다. - 현재시간
-                          // 기반으로 생성
+        .setId(String.valueOf(principalDetails.getUser().getUserNo())) // jti: JWT의 고유 식별자로서, 주로 중복적인 처리를 방지하기 위하여 사용됩니다. 일회용 토큰에 사용하면 유용합니다.
+        .setIssuedAt(now) // iat: 토큰이 발급된 시간 (issued at), 이 값을 사용하여 토큰의 age 가 얼마나 되었는지 판단 할 수 있습니다. - 현재시간 기반으로 생성
         .setSubject(principalDetails.getUser().getUsername()) // sub: 토큰 제목 (subject) - 사용자
         .setIssuer("gundam.com") // iss: 토큰 발급자 (issuer)
         .signWith(key, SignatureAlgorithm.HS512) // 사용할 암호화 알고리즘, signature에 들어갈 secret 값 세팅
-        .setExpiration(expiryDate) // exp: 토큰의 만료시간 (expiraton), 시간은 NumericDate 형식으로 되어있어야 하며 (예: 1480849147370),
-                                   // 언제나 현재 시간보다 이후로 설정되어있어야합니다.
+        .setExpiration(expiryDate) // exp: 토큰의 만료시간 (expiraton), 시간은 NumericDate 형식으로 되어있어야 하며 (예: 1480849147370), 언제나 현재 시간보다 이후로 설정되어있어야합니다.
     ;
 
     return builder.compact();
@@ -106,8 +95,8 @@ public class JwtTokenProvider {// implements InitializingBean {
   public String generateRefreshToken() {
     Date now = new Date();
     Date expiryDate = new Date(now.getTime() + JWT_REFRESH_EXPIRATION_MS);
-
     // 60000 * 1; // 만료 시간 세팅 : 60000 (1분) * 10 => 10분
+    
     return Jwts.builder()
         .setIssuedAt(now)
         .setExpiration(expiryDate)
