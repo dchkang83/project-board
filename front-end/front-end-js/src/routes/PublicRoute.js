@@ -1,14 +1,10 @@
-import { Component } from "react";
 import { Outlet, useLocation, Navigate } from "react-router-dom";
-
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Container from '@mui/material/Container';
-
 import { CheckToken } from '~/auth/AuthUtils';
 import Loading from '~/component/Loading';
 
 const theme = createTheme();
-
 export default function PublicRoute() {
   const location = useLocation();
   const { isAuth } = CheckToken(location.key);

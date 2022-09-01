@@ -42,7 +42,6 @@ export const loginUser = async (credentials) => {
     const text = await data.text();
     const json11 = text.length ? JSON.parse(text) : "";
 
-
     console.log('response.headers.authorization : ', data.headers.get('authorization'));
     for (let header of data.headers.entries()) {
       console.log(header);
@@ -52,7 +51,6 @@ export const loginUser = async (credentials) => {
       access_token: data.headers.get('authorization'),
       refresh_token: data.headers.get('refreshtoken'),
     };
-
 
     return {
       status,
@@ -95,16 +93,10 @@ export const logoutUser = async (credentials, accessToken) => {
 }
 
 export const requestToken = async (refreshToken) => {
-
-
-  console.log('################ requestToken #################');
-  // console.log('accessToken : ', accessToken);
-  console.log('refreshToken : ', refreshToken);
   const option = {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json;charset=UTF-8',
-      // 'X-ACCESS-TOKEN': accessToken,
       'X-REFRESH-TOKEN': refreshToken
     },
     // body: JSON.stringify({ refresh_token: refreshToken })
@@ -124,7 +116,6 @@ export const requestToken = async (refreshToken) => {
       access_token: data.headers.get('authorization'),
       refresh_token: data.headers.get('refreshtoken'),
     };
-
 
     return {
       status,

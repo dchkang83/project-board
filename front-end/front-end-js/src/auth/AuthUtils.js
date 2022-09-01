@@ -7,17 +7,10 @@ import { setRefreshToken } from '~/utils/Cookie';
 import { authActions } from '~/store/slices/authSlice';
 
 export function CheckToken(key) {
-
-  console.log('################ CheckToken #################');
-
   const [ isAuth, setIsAuth ] = useState('Loaded');
   const { authenticated, accessToken, expireTime } = useSelector(state => state.authReducer);  
   const refreshToken = getCookieToken();
   const dispatch = useDispatch();
-
-  console.log('authenticated : ', authenticated);
-  console.log('accessToken : ', accessToken);
-  console.log('expireTime : ', expireTime);
   
   useEffect(() => {
     const checkAuthToken = async () => {
@@ -25,18 +18,15 @@ export function CheckToken(key) {
         dispatch(authActions.delAccessToken());
         setIsAuth('Failed');
       } else {
-        // TODO. test
         setIsAuth('Success');
 
         if (authenticated && new Date().getTime() < expireTime) {
           setIsAuth('Success');
         } else {
-          // const response = await requestToken(accessToken, refreshToken);
           const response = await requestToken(refreshToken);
 
           if (response.status) {
             const token = response.json.access_token;
-            // dispatch(authActions.setAccessToken(token));
             dispatch(authActions.setAccessToken(response.jwtTokens.access_token));
             setRefreshToken(response.jwtTokens.refresh_token);
 
